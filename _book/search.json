@@ -1,0 +1,32 @@
+[
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "A Journey Through Statistical Rethinking",
+    "section": "",
+    "text": "Introduction\nThis is a repository containing my exhaustive notes and code from my journey through Richard McElreath’s Statistical Rethinking (Second Edition). Each chapter corresponds to the chapter in the book.\nAll source code is available on GitHub in this repository. The book is deployed with GitHub Pages.",
+    "crumbs": [
+      "Introduction"
+    ]
+  },
+  {
+    "objectID": "preface.html",
+    "href": "preface.html",
+    "title": "Preface",
+    "section": "",
+    "text": "Software Configuration\nGoing through the Preface, we need to do some preliminary configuration to prepare ourselves to use the software in the book. I’m running a 16 inch MacBook Pro (Nov 2023) Apple M3 Pro chip, and macOS Sonoma 14.6.1.",
+    "crumbs": [
+      "Preface"
+    ]
+  },
+  {
+    "objectID": "preface.html#software-configuration",
+    "href": "preface.html#software-configuration",
+    "title": "Preface",
+    "section": "",
+    "text": "Steps to get setup\nAs the book suggests:\n\n“You will need to install both a C++ compiler (also called a”tool chain”) and the rstan package. Instructions for doing both are at mc-stan.org\n\n\n1. Installing the C++ toolchain\nFrom the main web page, we go to the instructions for installing RStan.\n\na. Install macrtools\nWe can use this R package to help setup the C++ toolchain.\n\n# install.packages(\"remotes\")\nremotes::install_github(\"coatless-mac/macrtools\")\n\nThen we run the following command:\n\nmacrtools::macos_rtools_install()\n\nI was prompted to enter a password (my computer’s password) in RStudio. After it installed, I received this message in the R console:\nCongratulations! \nXcode CLI, Gfortran, and R developer binaries have been installed successfully.\n\n\nb. Optimize compiler\nWe run the R code here to “enable some compiler optimizations to improve the estimation speed of the model”:\n\ndotR &lt;- file.path(Sys.getenv(\"HOME\"), \".R\")\nif (!file.exists(dotR)) dir.create(dotR)\nM &lt;- file.path(dotR, \"Makevars\")\nif (!file.exists(M)) file.create(M)\narch &lt;- ifelse(R.version$arch == \"aarch64\", \"arm64\", \"x86_64\")\ncat(paste(\"\\nCXX17FLAGS += -O3 -mtune=native -arch\", arch, \"-ftemplate-depth-256\"),\n    file = M, sep = \"\\n\", append = FALSE)\n\nIt ran without error (though I don’t really know what it did).\n\n\n\n2. Install rstan\nGoing back to the RStan page, we can run the following installation:\n\ninstall.packages(\"rstan\", repos = \"https://cloud.r-project.org/\", dependencies = TRUE)\n\nThis worked.\n\nTest some examples\nRunning the following example:\n\nexample(stan_model, package = \"rstan\", run.dontrun = TRUE)\n\nI received a lot of output in the console (compilation and sampling).\n\nImport package\n\n## Load the package\nlibrary(\"rstan\") # observe startup messages\n\n# Set cores\noptions(mc.cores = parallel::detectCores()) # 12\n\n# Auto write compiled stan code\n# rstan_options(auto_write = TRUE) # &lt;-- Not doing it here, but would be useful\n\nIt says, “You will need to run these commands each time you load the rstan library.”\n\n\nRun an example model\nWe saved an example Stan file in stan/schools.stan, and then run the example:\n\n# Data to input into model\nschools_dat &lt;- \n  list(\n    J = 8, \n    y = c(28,  8, -3,  7, -1,  1, 18, 12),\n    sigma = c(15, 10, 16, 11,  9, 11, 10, 18)\n  )\n\n# Fit the model\nfit &lt;- stan(file = 'stan/schools.stan', data = schools_dat)\n\nIt fit with this message:\n\nWarning messages:\n1: There were 11 divergent transitions after warmup. See\nhttps://mc-stan.org/misc/warnings.html#divergent-transitions-after-warmup\nto find out why this is a problem and how to eliminate them. \n2: Examine the pairs() plot to diagnose sampling problems\n\n\nprint(fit)\nplot(fit)\npairs(fit, pars = c(\"mu\", \"tau\", \"lp__\"))\n\nla &lt;- extract(fit, permuted = TRUE) # return a list of arrays \nmu &lt;- la$mu \n\n### return an array of three dimensions: iterations, chains, parameters \na &lt;- extract(fit, permuted = FALSE) \n\n### use S3 functions on stanfit objects\na2 &lt;- as.array(fit)\nm &lt;- as.matrix(fit)\nd &lt;- as.data.frame(fit)\n\n\n\n\n\nInstall book packages\n\ninstall.packages(c(\"coda\", \"mvtnorm\", \"devtools\", \"dagitty\"))\ndevtools::install_github(\"rmcelreath/rethinking\")\n\nHad issues with cmdstanr, so I’m following instructions here.\n\n# we recommend running this is a fresh R session or restarting your current session\ninstall.packages(\"cmdstanr\", repos = c('https://stan-dev.r-universe.dev', getOption(\"repos\")))\n\nNow try again\n\ndevtools::install_github(\"rmcelreath/rethinking\")\n\nSuccess!\nAt this point, I don’t know what is better: rstan or cmdstanr",
+    "crumbs": [
+      "Preface"
+    ]
+  }
+]

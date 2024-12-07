@@ -1,0 +1,5 @@
+# Introduction {.unnumbered}
+
+This is a repository containing my exhaustive notes and code from my journey through Richard McElreath's [_Statistical Rethinking (Second Edition)_](https://xcelab.net/rm/). Each chapter corresponds to the chapter in the book. 
+
+All source code is available on [GitHub](github.com) in [this repository](https://github.com/zajichek/statistical_rethinking). The book is [deployed with GitHub Pages](https://quarto.org/docs/publishing/github-pages.html).

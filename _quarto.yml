@@ -1,0 +1,28 @@
+project:
+  type: book
+
+book:
+  title: "A Journey Through Statistical Rethinking"
+  author: "Alex Zajichek"
+  date: "12/7/2024"
+  chapters:
+    - index.qmd
+    - preface.qmd
+    - chapter1.qmd
+    - references.qmd
+  page-footer: 
+    center:
+      - icon: github
+        href: https://github.com/zajichek
+        aria-label: GitHub
+      - icon: linkedin
+        href: https://www.linkedin.com/in/alexzajichek
+        aria-label: LinkedIn
+
+bibliography: references.bib
+
+format:
+  html:
+    theme: sandstone
+    code-fold: true
+    code-tools: true
