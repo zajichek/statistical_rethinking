@@ -1,1 +1,102 @@
 # The Golem of Prague
+
+> "Animated by truth, but lacking free will, a golem always does exactly what it is told." (1)
+
+## Models are robots
+
+Statistical models are (or can be) like _golems_ in the sense that they are concerned with modeling the world (the truth), but they have no sense of morality on their own. They only do what is intended, regardless of consequences, implications, values, trade-offs, etc. It is up to _us_ to direct the models towards what is useful, and use them in a way that makes sense--through logic, reasoning, common sense, etc. Therefore, we must separate the _mathematical_ procedure of statistical modeling from the _interpretation_ or implication that it has.
+
+> "Sometimes their underlying logic reveals implications previously hidden to their designers. These implications can be priceless discoveries. Or they may produce silly and dangerous behavior...there is no wisdom in the golem. It doesn't discern when the context is inappropriate for its answers. It just knows its own procedures, nothing else. It just does as it's told." (2)
+
+It's often the case that statistics is taught straight from this _golem_ point of view: people look at statistics as an objective, deterministic check list to do science. So they follow diagrams (like the test decision tree shown on page 2) to choose the "right" test, without considering any of the consequences of the golem that are only garnered through "wisdom". 
+
+> "So students and many scientists tend to use charts like [the testing decision tree] without much thought to their underlying structure, without much awareness of the models that each procedure embodies, and without any framework to help them make the inevitable compromises required by real research. It's not their fault." (3)
+
+McElreath compares this to plumbers doing their jobs without knowing fluid dynamics, implying it can be "fine" in certain contexts. It's when the user steps outside of the intended use by extrapolating: _"It's as if we got out hydraulic engineers by promoting plumbers" (3)_. Now I get the point there, but I think there probably _is_ inherent knowledge that plumbers could contribute to the hydraulic engineering process, which seems to be an afterthought here.
+
+### Good to play in everyone's yard?
+
+One common perk of statistics is that you can "play in everyone's backyard". It's cool. But I've also [more recently thought](https://www.zajichekstats.com/post/statistical-significance-is-insignificant/) this to be a somewhat negative thing for producing truly useful statistical results. McElreath hints at that here as well, first in describing the _inflexibility_ and _fragility_ of classical statistical methods and how they are used so frequently, yet are rarely _truly_ appropriate. More pointedly, he makes the case:
+
+> "The point is that classical tools are not diverse enough to handle many common research questions. Every active area of science contends with unique difficulties of measurement and interpretation, converses with idiosyncratic theories in a dialect barely understood by other scientists from other tribes. Statistical experts outside the discipline can help, but they are limited by lack of fluency in the empirical and theoretical concerns of the discipline." (3)
+
+This is exactly right. Domain knowledge and intuition is king, and oftentimes statisticians (myself included) don't truly have those things when approached for statistical assistance, limiting their ability to have _optimal_ impact (though you may still be able to get the job done, if the goal is to say, just get a publication). I always say that a domain expert with some statistical chops is more effective than someone with tons of technical skills. That's just the nature of it, so it's about finding ways to collaborate with synergy to bring out what is needed from both sides.
+
+## A new way to think
+
+He sets the stage for the book's thesis quite clearly:
+
+> "So there are benefits in rethinking statistical inference as a set of strategies, instead of a set of pre-made tools." (4)
+
+It's about statistical practice, of course, but also how we can _teach_ statistics, even at an introductory level, differently so it's not just based on objective, pre-made tools. This would be glorious. Instead of teaching students to systematically look up z-scores in the back of the text book and write out "significance" statements, teach them to solve problems with their brain. I've thought one simple way to start would just be to use varying (or random) confidence/significance levels on different problems, which at the very least would elicit some questioning and skepticism about what those numbers mean.
+
+### Flaws in falsifiability
+
+He discusses Karl Popper and the perceived objective of science being to falsify hypotheses. I agree that in principle, this makes sense: there's never really a right answer, but we can move closer and closer to the truth by finding evidence of what it's not. But I think one thing that's overlooked is how this plays out in the real-world (and what I deduce as an undertone from McElreath): null hypotheses that we test against are arbitrary and blindly applied. We test default hypotheses that we don't even think ourselves to be true (i.e., null effects). It's just part of the statistical procedure (on page 5 in the purple side box he actually goes into this explicitly). So I think this is a component of it, but he then goes more into other reasons why this is flawed.
+
+* _Hypotheses are not models_: Getting at the idea that somehow each hypothesis tested is somehow its own thing that move us in some direction. But these are often actually just different subcomponents of the same phenomenon. Considering a model of the world for something, the angles that it is studied at (e.g., by different researchers), what is actually tested, how things are measured, etc. There is so much varible overlap that it's impossible to make any conclusive statements about that true _model_ that we believe exists.
+
+* _Measurement matters_: This is a huge point. _Our_ study may suggest something. But you have a different group of people conduct the same study, there will be many nuances that likely differ. These things can always be critiqued, and cause real inconsistencies and variation--and rightly so. "They don't trust the data. Sometimes they are right". To me, this is one of the major flaws in current academic research when trying to confer individual implication to a study. There are literally infinite ways to conduct a study on the same topic.
+
+Models are always wrong, as he states, so how can we falsify one when we know whatever we choose next is wrong too? To me, this _is_ a segway into Bayesian thinking. Instead of just looking at hypotheses in a traditional sense, we want to know what is _most likely_ to have been the thing to created the data (out of all possibilities).
+
+> "These hypotheses have vague boundries, because they begin as verbal conjectures, not precise models. There are hundreds of possible potential processes that [describe the null hypothesis]." (5)
+
+## Levels of hypotheses
+
+Digging further into the _hypotheses are not models_ point, he describes layers to framing the model:
+
+1. Hypotheses: These are the vague things stated above
+2. Process models: These are more specific possibilities of actual data generating processes (and _causal_ structure) that could fit into those vague bins. These are the conceptual, time dependent (i.e., cause-effect ordering), causal structures of what may explain a phenomenon.
+3. Statistical models: We need to translate the causal model into some (associative) statistical model to be able to estimate things. The problem is that these models can be a result of multiple process models, even from different hypotheses.
+
+A key point here is that the _statistical model_ (e.g., in this example) is what is represented by the statistical procedure/estimates, but that representation can be the same even with different data-generating processes, because the same data/predictions, for example, can be generated by completely different processes. Discussing typical hypothesis testing:
+
+> "If we reject the null, we can't really conclude that selection matters, because there are other neutral models that predict different distributions of alleles. And if we fail to reject the null, we can't really conclude that evolution is neutral, because some selection models expect the same frequency distribution." (7)
+
+### What you should think about
+
+> "If it turns out that all of the process models of interest make very similar predictions, then you know to search for a different description of the evidence, a description under which the processes look different." (7)
+
+This means that the way we represent, estimate, or quantify the process then should be changed because the way you're currently doing it leads to ambiguity. So find different metrics, different representations, etc. Also, focus on the data-generating process:
+
+> "Process models allow us to design statistical models with [e.g., unobserved variables and sampling bias] in mind. The statistical model alone is not enough." (7)
+
+## Inching towards Bayes
+
+The first part of section 1.2.2 (and everthing leading up to it) hints at a Bayesian point of view. 
+
+> "In contrast, finding D tells us nothing certain about H, because other hypotheses might also predict D." (7)
+
+The idea is that many states of the world could very conceivably produce some observation, but that doesn't mean that state of the world is therefore likely to be the one that did. This is very much related to the _fallacy of the transposed conditional_ which I talk about here:
+
+{{< video https://www.youtube.com/embed/-ZNh26oEPbg >}}
+
+and is a central point to one of my favorite books, [_The Cult of Statistical Significance_](https://press.umich.edu/Books/T/The-Cult-of-Statistical-Significance2) and something I wrote about in a [prior blog post](https://www.zajichekstats.com/post/statistical-significance-is-insignificant/).
+
+### Measuring things
+
+The _all swans are white_ null example is useful as reference point to compare with other important scientific hypotheses we are truly after. In this case, with such a "big" statement (applying to ALL swans) you just need to see one black one and it's over and done with. But the problem, at least in part, is:
+
+a. Not all scientific inquiries are this simple, objective, and clear
+b. Not all _measurements_ about the thing are clear either.
+
+For example, what if the "black" swan you saw was actually a white swan that had a bad encounter with black paint or tar? Would you know? Maybe in that circumstance you would, but across all scientific inquiries, these nuances and possibilities for measurement error, bias, etc. are infinite.
+
+> "At the edges of scientific knowledge, the ability to measure a hypothetical phenomenon is often in question as much as the phenomenon itself." (8)
+
+The example about [neutrinos](https://en.wikipedia.org/wiki/Neutrino) and the speed of light is a really great, intuitive example about the complexities and biases inherent to measurement. It's people's preconceived notion about what level of evidence is sufficient, mixed with the phenomenon being measured, the conditions under which it is being measured, and the fact that despite how "objective" we think a measurement device is, it is _always_ an _estimate_ of the real thing. Great section on page 8.
+
+> "But the probabilistic nature of evidence rarely appears when practicing scientists discuss the philosophy and practice of falsification. My reading of the history of science is that these sorts of measurement problems are the norm, not the exception." (9)
+
+In discussing more opaque hypotheses,
+
+> "Now, nearly everyone agrees that it is a good practice to design experiments and observations that can differentiate competeing hypotheses. But in many cases, the comparison must be probabilistic, a matter of degree, not kind." (9)
+
+Both of these hint at Bayesian thinking.
+
+The last paragraph on in section 1.2 is very important:
+
+> "But falsification is always consensual, not logical. In light of real problems of measurement error and the continuous nature of natural phenomena, scientific communities argue towards consensus about the meaning of evidence." (9)
+
+It's worth reading the rest of it. But the point being that we cannot objectively, and logical falsify something completely. It's more so the consensus of people agree that, based on evidence, we all agree it is false. And the last sentence is key: _"And it may hurt the public, by exaggerating the definitiveness of scientific knowledge."_
