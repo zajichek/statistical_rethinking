@@ -64,7 +64,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="site_libs/quarto-search/fuse.min.js"></script>
 <script src="site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="./">
-<link href="./references.html" rel="next">
+<link href="./chapter2.html" rel="next">
 <link href="./preface.html" rel="prev">
 <script src="site_libs/quarto-html/quarto.js"></script>
 <script src="site_libs/quarto-html/popper.min.js"></script>
@@ -160,6 +160,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
+  <a href="./chapter2.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Small Worlds and Large Worlds</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
   <a href="./references.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">References</span></a>
   </div>
@@ -186,9 +192,24 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <ul class="collapse">
   <li><a href="#what-you-should-think-about" id="toc-what-you-should-think-about" class="nav-link" data-scroll-target="#what-you-should-think-about"><span class="header-section-number">1.3.1</span> What you should think about</a></li>
   </ul></li>
-  <li><a href="#inching-towards-bayes" id="toc-inching-towards-bayes" class="nav-link" data-scroll-target="#inching-towards-bayes"><span class="header-section-number">1.4</span> Inching towards Bayes</a>
+  <li><a href="#inching-towards-bayes-chapter1inching" id="toc-inching-towards-bayes-chapter1inching" class="nav-link" data-scroll-target="#inching-towards-bayes-chapter1inching"><span class="header-section-number">1.4</span> Inching towards Bayes {chapter1inching}</a>
   <ul class="collapse">
   <li><a href="#measuring-things" id="toc-measuring-things" class="nav-link" data-scroll-target="#measuring-things"><span class="header-section-number">1.4.1</span> Measuring things</a></li>
+  </ul></li>
+  <li><a href="#model-the-world" id="toc-model-the-world" class="nav-link" data-scroll-target="#model-the-world"><span class="header-section-number">1.5</span> Model the world</a></li>
+  <li><a href="#the-tools-to-get-there" id="toc-the-tools-to-get-there" class="nav-link" data-scroll-target="#the-tools-to-get-there"><span class="header-section-number">1.6</span> The tools to get there</a>
+  <ul class="collapse">
+  <li><a href="#bayesian-vs.-frequentist" id="toc-bayesian-vs.-frequentist" class="nav-link" data-scroll-target="#bayesian-vs.-frequentist"><span class="header-section-number">1.6.1</span> Bayesian vs.&nbsp;frequentist</a></li>
+  <li><a href="#bayesianing-not-bayesianism" id="toc-bayesianing-not-bayesianism" class="nav-link" data-scroll-target="#bayesianing-not-bayesianism"><span class="header-section-number">1.6.2</span> Bayesianing, not Bayesianism</a></li>
+  </ul></li>
+  <li><a href="#centering-the-model" id="toc-centering-the-model" class="nav-link" data-scroll-target="#centering-the-model"><span class="header-section-number">1.7</span> Centering the model</a>
+  <ul class="collapse">
+  <li><a href="#beyond-accuracy" id="toc-beyond-accuracy" class="nav-link" data-scroll-target="#beyond-accuracy"><span class="header-section-number">1.7.1</span> Beyond accuracy</a></li>
+  <li><a href="#a-multilevel-approach" id="toc-a-multilevel-approach" class="nav-link" data-scroll-target="#a-multilevel-approach"><span class="header-section-number">1.7.2</span> A multilevel approach</a></li>
+  </ul></li>
+  <li><a href="#mechanism-and-causality" id="toc-mechanism-and-causality" class="nav-link" data-scroll-target="#mechanism-and-causality"><span class="header-section-number">1.8</span> Mechanism and causality</a>
+  <ul class="collapse">
+  <li><a href="#the-diagram" id="toc-the-diagram" class="nav-link" data-scroll-target="#the-diagram"><span class="header-section-number">1.8.1</span> The diagram</a></li>
   </ul></li>
   </ul>
 </nav>
@@ -281,8 +302,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </blockquote>
 </section>
 </section>
-<section id="inching-towards-bayes" class="level2" data-number="1.4">
-<h2 data-number="1.4" class="anchored" data-anchor-id="inching-towards-bayes"><span class="header-section-number">1.4</span> Inching towards Bayes</h2>
+<section id="inching-towards-bayes-chapter1inching" class="level2" data-number="1.4">
+<h2 data-number="1.4" class="anchored" data-anchor-id="inching-towards-bayes-chapter1inching"><span class="header-section-number">1.4</span> Inching towards Bayes {chapter1inching}</h2>
 <p>The first part of section 1.2.2 (and everthing leading up to it) hints at a Bayesian point of view.</p>
 <blockquote class="blockquote">
 <p>“In contrast, finding D tells us nothing certain about H, because other hypotheses might also predict D.” (7)</p>
@@ -315,6 +336,82 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p>“But falsification is always consensual, not logical. In light of real problems of measurement error and the continuous nature of natural phenomena, scientific communities argue towards consensus about the meaning of evidence.” (9)</p>
 </blockquote>
 <p>It’s worth reading the rest of it. But the point being that we cannot objectively, and logical falsify something completely. It’s more so the consensus of people agree that, based on evidence, we all agree it is false. And the last sentence is key: <em>“And it may hurt the public, by exaggerating the definitiveness of scientific knowledge.”</em></p>
+</section>
+</section>
+<section id="model-the-world" class="level2" data-number="1.5">
+<h2 data-number="1.5" class="anchored" data-anchor-id="model-the-world"><span class="header-section-number">1.5</span> Model the world</h2>
+<p>In order to take a new approach from falsification (and conform pre-existing golems to every situtation), we are to re-think everything in terms of models. Instead of applying a statistical test, we consider the model for how the data was generated–the data-generating process.</p>
+<blockquote class="blockquote">
+<p>“But if you are a good golem engineer, at least you’ll notice the destruction.” (10)</p>
+</blockquote>
+<p>The point of this quote is to say that by focusing on the <em>model</em>, you focus on mechanism. You aren’t using the golem (statistical test/model) as a brute force objective procedure to “apply” to your data, but rather tailor a unique golem for the specific purpose of answering your research question. Thus it has to do with constructing the right model, informed by common sense, domain knowledge, causal pathways, etc. so that the <em>interpretation</em> side (in which the golem doesn’t have) is better positioned to answer your question. This means you have to dig deeper than is traditionally done, because this is how true science <em>is</em> done. You have to think. You have to know your model. You have to reason. Nothing about this is about mechanistically just thoughtlessly throwing data into modeling software, getting a value, following some rule, and writing a blanket statement about the results. Basically, <em>you need to feel the result in your bones</em>.</p>
+</section>
+<section id="the-tools-to-get-there" class="level2" data-number="1.6">
+<h2 data-number="1.6" class="anchored" data-anchor-id="the-tools-to-get-there"><span class="header-section-number">1.6</span> The tools to get there</h2>
+<p>The book’s primary focus is causal modeling through Bayesian statistics. An important thing to note is that he doesn’t use Bayesian modeling for ideological reasons, per say, it’s more so that it just happens to be the framework that makes sense to facilitate modeling from a generative perspective.</p>
+<section id="bayesian-vs.-frequentist" class="level3" data-number="1.6.1">
+<h3 data-number="1.6.1" class="anchored" data-anchor-id="bayesian-vs.-frequentist"><span class="header-section-number">1.6.1</span> Bayesian vs.&nbsp;frequentist</h3>
+<p>He simplifies Bayesian statistics as a way to count the ways things could happen, and then see what is most likely. And that’s a good way to think about it: we just want to know what is the most likely explanation for generating our observation, not how likely our data is under some hypothetical truth.</p>
+<p>It’s also interesting he discusses <em>frequentist</em> statistics as a <em>special case</em> of Bayesian probability. He emphasizes that it’s based on the idea of imaginary resampling of data, and points out, and deservedly so, sure this could be a good way to think about it in a controlled lab experiment when you <em>could</em> conceivably keep sampling over and over, but for many other things, it just doesn’t make sense conceptually.</p>
+<blockquote class="blockquote">
+<p>“This resampling is never done, and in general it doesn’t even make sense–it is absurd to consider repeat sampling of the diversification of song birds in the Andes. As Sir Ronald Fisher, one of the most important frequentist statisticians of the twentieth century, put it: ‘the only populations that can be referred to in a test of significance have no objective reality, being exclusively the product of the statistician’s imagination.’” (11)</p>
+</blockquote>
+<p>Quite the interesting closing paragraph of page 11, stating that <em>“Bayesian golems treat ‘randomness’ as a property of information, not of the world.”</em></p>
+<blockquote class="blockquote">
+<p>“Nothing in the real world–excepting controversial interpretations of quantum physics–is actually random. Presumably, if we had more information, we could exactly predict everything. We just use randomness to describe our uncertainty in the face of incomplete knowledge. From the perspective of our golem, the coin toss is ‘random’, but it’s really the golem that is random, not the coin.” (11)</p>
+</blockquote>
+<p>He acknowledges the quantum point here. But that is precisely one of the main objections to the idea of “everything being predictable”. This is a potentially useful way to view a lot of things that are studied, because it makes a lot of sense, but probability fields in quantum physics seem to point to something deeper at a more fundamental level. This is explicitly discussed in the book, <a href="https://www.amazon.com/Light-Mind-World-Science-Illuminating/dp/1684515335"><em>Light of the Mind, Light of the World: Illuminating Science Through Faith</em></a>. It’s a central theme in the book, but Chapter 3 in particular discusses the “small gods” as being those who view the world from this mechanical philosophy: <em>“a conviction that the world was made of bodies, whose movements and collisions were as sharply regulated as those displayed by an intricately calibrated machine…if they could be described using numbers alone, atoms might reveal the truth underlying all things” (page 69)</em>.</p>
+</section>
+<section id="bayesianing-not-bayesianism" class="level3" data-number="1.6.2">
+<h3 data-number="1.6.2" class="anchored" data-anchor-id="bayesianing-not-bayesianism"><span class="header-section-number">1.6.2</span> Bayesianing, not Bayesianism</h3>
+<p>He further solidifies his stance that he’s not using Bayesian modeling on ideological grounds.</p>
+<blockquote class="blockquote">
+<p>“Note that the preceding description doesn’t invoke anyone’s ‘beliefs’ or subjective opinions. Bayesian data analysis is just a logical procedure for processing information. There is a tradition of using this procedure as a normative description of rational belief, a tradition called Bayesianism. But this book neither describes nor advocates it. In fact, I’ll argue that no statistical approach, Bayesian or otherwise, is by itself sufficient.” (12)</p>
+</blockquote>
+<p>He then goes on to describe the advantage of Bayesian analysis–it is more intuitive. People can grasp the practical implications easier, and it just makes sense. Otherwise you are just trying to remember some steps or criteria or what boilerplate sentence to write about a p-value, without actually thinking through what it means. The interesting case he makes it how often a p-value (or confidence interval) is interpreted like a <em>posterior probability</em> (<a href="chapter1inching">go back up the page</a>, this is related to the <em>fallacy of the transposed conditional</em> as well), but the reverse is not done.</p>
+<blockquote class="blockquote">
+<p>“The opposite pattern of mistake–interpreting a posterior probability as a p-value–seems to happen only rarely. None of this ensures Bayesian analysis will be more correct…the scientist’s intuition will less commonly be at odds with actual logic of the framework.” (12)</p>
+</blockquote>
+</section>
+</section>
+<section id="centering-the-model" class="level2" data-number="1.7">
+<h2 data-number="1.7" class="anchored" data-anchor-id="centering-the-model"><span class="header-section-number">1.7</span> Centering the model</h2>
+<p>As I’ve been learning about statistical history, philosophy, and Bayesian thinking, one huge differentiator I’ve realized is the basic idea that in the Bayesian setting, the <em>model</em> becomes the center of attention, and the <em>data</em> is just there to supplement it. To me, this changes the entire view of the problem. I’ve talked about this before, like in <a href="https://www.centralstatz.com/posts/can-you-have-a-model-without-data/">this blog post</a>, and in this supporting video:</p>
+<div class="quarto-video ratio ratio-16x9"><iframe data-external="1" src="https://www.youtube.com/embed/bUerkVsCwtA" title="" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen=""></iframe></div>
+<p>I bring this up because the first sentence of section 1.3.2, although stated casually, is very profound:</p>
+<blockquote class="blockquote">
+<p>“Bayesian data analysis provides a way for models to learn from data.” (13)</p>
+</blockquote>
+<p>The emphasis being that our <em>model</em> can learn from data. Meaning our <em>model</em> is a constant, a living, breathing object that describes the world. We only use data, as it comes and goes, to help inform that model as it is needed.</p>
+<section id="beyond-accuracy" class="level3" data-number="1.7.1">
+<h3 data-number="1.7.1" class="anchored" data-anchor-id="beyond-accuracy"><span class="header-section-number">1.7.1</span> Beyond accuracy</h3>
+<p>He talks about the concept of overfitting, and the need for cross-validation, etc. But one attribute of Bayesian thinking that is related to this is the fact that multiple models can produce the same predictions, and so choosing the simpler one is in large part what Bayesian thinking does. So beyond getting good predictions, we’re chosen the model/mechanism that more likely generated the data. There is a <a href="https://nyaspubs.onlinelibrary.wiley.com/doi/10.1111/nyas.15086">fascinating paper</a> related to this topic that discusses how Bayesian modeling is essentially the realization of <a href="https://en.wikipedia.org/wiki/Occam%27s_razor">Occam’s Razor</a>–definitely worth the read.</p>
+</section>
+<section id="a-multilevel-approach" class="level3" data-number="1.7.2">
+<h3 data-number="1.7.2" class="anchored" data-anchor-id="a-multilevel-approach"><span class="header-section-number">1.7.2</span> A multilevel approach</h3>
+<p>He implicitly describes <em>multilevel models</em> as a key concept in this book. Yes, these are models that we think of: individual students in classrooms, classrooms in schools, schools in district, etc. But the <em>effect</em> of using these models is profound:</p>
+<blockquote class="blockquote">
+<p>“Cross-validation and information criteria measure overfitting risk and help us to recognize it. Multilevel models actually do something about it.” (14)</p>
+</blockquote>
+<p><em>Partial pooling</em> is what allows us to structure models and share information very it is necessary, while preserving variation and other important components of the data-generating process. In this sense, he extends this concept more generally to how we can think about multilevel modeling, in the context of missing data, factor analysis, etc. The concept that <em>“each parameter can be thought of as a placeholder for a missing model”</em> makes you realize the hierarchical structure of every modeling process.</p>
+<p>He then makes a big claim: <em>“multilevel regression deserves to be the default form of regression”</em>. Stating that papers should have to justify <em>not</em> doing this, rather than the current practice. Intuitively, I think this makes sense. Part of the reason you can easily critique this in academic papers is because there are a lot of things worth critiquing, stemming from things like the cult of statistical significance, poor publication standards, reliance on “positive” p-values, and overall lack of accountability for anything that happens with the results beyond them being printed on a page, leaving open an infinite number of ways to “do” a study and get it published…but I digress.</p>
+<blockquote class="blockquote">
+<p>“Fitting and interpreting multilevel models can be considerably harder than fitting and interpreting a traditional regression model.” (15)</p>
+</blockquote>
+<p>Exactly. It’s harder. And there’s no incentive to do it, because they’ll still get the funding and publication, so same end result.</p>
+</section>
+</section>
+<section id="mechanism-and-causality" class="level2" data-number="1.8">
+<h2 data-number="1.8" class="anchored" data-anchor-id="mechanism-and-causality"><span class="header-section-number">1.8</span> Mechanism and causality</h2>
+<blockquote class="blockquote">
+<p>“Facts outside the data are needed to decide which explanation is correct.” (16)</p>
+</blockquote>
+<p>He makes a similar point here described above, that models can have similar predictions but not be the true causal mechanism. This has to do with overfitting (think the geocentric vs.&nbsp;heliocentric models), and inferring what makes sense logically regardless of the outputs of the model.</p>
+<p>The concept of <em>identification</em> is very important here, because it distinguishes the simple act of predicting what will happen (i.e., I can <em>predict</em> that the wind is blowing given I see tree branches swaying) versus <em>intervening</em> on a process and inferring what will happen as a result (I can’t then go and move the branches around to make wind start blowing (besides the force generated from the branches which is different))</p>
+<section id="the-diagram" class="level3" data-number="1.8.1">
+<h3 data-number="1.8.1" class="anchored" data-anchor-id="the-diagram"><span class="header-section-number">1.8.1</span> The diagram</h3>
+<p>We will use <em>directed acyclic graphs (DAG)</em> as the choice of <em>graphical causal model</em> (as this isn’t the only kind). They are not models themselves, but diagrams to help us think through what model and statistical procedures are most appropriate for the research question.</p>
+<p>In the “Rethinking” box he makes the point about <em>causal salad</em>, which is just the idea that we can do causal inference by “adjusting for all confounders”, which is a very common practice in science, to just throw everything we can think of in a regression model and say we “controlled” for stuff. It’s curious why every one of those papers have a “limitation” section stating that causal inference can’t be assumed, like a disclaimer. Tells you that the people doing this probably don’t believe the results themselves, otherwise they’d be repressed to stand by such a statement.</p>
 
 
 <!-- -->
@@ -801,8 +898,8 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
       </a>          
   </div>
   <div class="nav-page nav-page-next">
-      <a href="./references.html" class="pagination-link" aria-label="References">
-        <span class="nav-page-text">References</span> <i class="bi bi-arrow-right-short"></i>
+      <a href="./chapter2.html" class="pagination-link" aria-label="Small Worlds and Large Worlds">
+        <span class="nav-page-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Small Worlds and Large Worlds</span></span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav><div class="modal fade" id="quarto-embedded-source-code-modal" tabindex="-1" aria-labelledby="quarto-embedded-source-code-modal-label" aria-hidden="true"><div class="modal-dialog modal-dialog-scrollable"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" id="quarto-embedded-source-code-modal-label">Source Code</h5><button class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><div class="">
@@ -870,7 +967,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 <span id="cb1-62"><a href="#cb1-62" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-63"><a href="#cb1-63" aria-hidden="true" tabindex="-1"></a><span class="at">&gt; "Process models allow us to design statistical models with </span><span class="co">[</span><span class="ot">e.g., unobserved variables and sampling bias</span><span class="co">]</span><span class="at"> in mind. The statistical model alone is not enough." (7)</span></span>
 <span id="cb1-64"><a href="#cb1-64" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-65"><a href="#cb1-65" aria-hidden="true" tabindex="-1"></a><span class="fu">## Inching towards Bayes</span></span>
+<span id="cb1-65"><a href="#cb1-65" aria-hidden="true" tabindex="-1"></a><span class="fu">## Inching towards Bayes {chapter1inching}</span></span>
 <span id="cb1-66"><a href="#cb1-66" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-67"><a href="#cb1-67" aria-hidden="true" tabindex="-1"></a>The first part of section 1.2.2 (and everthing leading up to it) hints at a Bayesian point of view. </span>
 <span id="cb1-68"><a href="#cb1-68" aria-hidden="true" tabindex="-1"></a></span>
@@ -907,7 +1004,87 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 <span id="cb1-99"><a href="#cb1-99" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-100"><a href="#cb1-100" aria-hidden="true" tabindex="-1"></a><span class="at">&gt; "But falsification is always consensual, not logical. In light of real problems of measurement error and the continuous nature of natural phenomena, scientific communities argue towards consensus about the meaning of evidence." (9)</span></span>
 <span id="cb1-101"><a href="#cb1-101" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-102"><a href="#cb1-102" aria-hidden="true" tabindex="-1"></a>It's worth reading the rest of it. But the point being that we cannot objectively, and logical falsify something completely. It's more so the consensus of people agree that, based on evidence, we all agree it is false. And the last sentence is key: _"And it may hurt the public, by exaggerating the definitiveness of scientific knowledge."_</span></code><button title="Copy to Clipboard" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></pre></div>
+<span id="cb1-102"><a href="#cb1-102" aria-hidden="true" tabindex="-1"></a>It's worth reading the rest of it. But the point being that we cannot objectively, and logical falsify something completely. It's more so the consensus of people agree that, based on evidence, we all agree it is false. And the last sentence is key: _"And it may hurt the public, by exaggerating the definitiveness of scientific knowledge."_</span>
+<span id="cb1-103"><a href="#cb1-103" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-104"><a href="#cb1-104" aria-hidden="true" tabindex="-1"></a><span class="fu">## Model the world</span></span>
+<span id="cb1-105"><a href="#cb1-105" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-106"><a href="#cb1-106" aria-hidden="true" tabindex="-1"></a>In order to take a new approach from falsification (and conform pre-existing golems to every situtation), we are to re-think everything in terms of models. Instead of applying a statistical test, we consider the model for how the data was generated--the data-generating process.</span>
+<span id="cb1-107"><a href="#cb1-107" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-108"><a href="#cb1-108" aria-hidden="true" tabindex="-1"></a><span class="at">&gt; "But if you are a good golem engineer, at least you'll notice the destruction." (10)</span></span>
+<span id="cb1-109"><a href="#cb1-109" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-110"><a href="#cb1-110" aria-hidden="true" tabindex="-1"></a>The point of this quote is to say that by focusing on the _model_, you focus on mechanism. You aren't using the golem (statistical test/model) as a brute force objective procedure to "apply" to your data, but rather tailor a unique golem for the specific purpose of answering your research question. Thus it has to do with constructing the right model, informed by common sense, domain knowledge, causal pathways, etc. so that the _interpretation_ side (in which the golem doesn't have) is better positioned to answer your question. This means you have to dig deeper than is traditionally done, because this is how true science _is_ done. You have to think. You have to know your model. You have to reason. Nothing about this is about mechanistically just thoughtlessly throwing data into modeling software, getting a value, following some rule, and writing a blanket statement about the results. Basically, _you need to feel the result in your bones_.</span>
+<span id="cb1-111"><a href="#cb1-111" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-112"><a href="#cb1-112" aria-hidden="true" tabindex="-1"></a><span class="fu">## The tools to get there</span></span>
+<span id="cb1-113"><a href="#cb1-113" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-114"><a href="#cb1-114" aria-hidden="true" tabindex="-1"></a>The book's primary focus is causal modeling through Bayesian statistics. An important thing to note is that he doesn't use Bayesian modeling for ideological reasons, per say, it's more so that it just happens to be the framework that makes sense to facilitate modeling from a generative perspective.</span>
+<span id="cb1-115"><a href="#cb1-115" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-116"><a href="#cb1-116" aria-hidden="true" tabindex="-1"></a><span class="fu">### Bayesian vs. frequentist</span></span>
+<span id="cb1-117"><a href="#cb1-117" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-118"><a href="#cb1-118" aria-hidden="true" tabindex="-1"></a>He simplifies Bayesian statistics as a way to count the ways things could happen, and then see what is most likely. And that's a good way to think about it: we just want to know what is the most likely explanation for generating our observation, not how likely our data is under some hypothetical truth. </span>
+<span id="cb1-119"><a href="#cb1-119" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-120"><a href="#cb1-120" aria-hidden="true" tabindex="-1"></a>It's also interesting he discusses _frequentist_ statistics as a _special case_ of Bayesian probability. He emphasizes that it's based on the idea of imaginary resampling of data, and points out, and deservedly so, sure this could be a good way to think about it in a controlled lab experiment when you _could_ conceivably keep sampling over and over, but for many other things, it just doesn't make sense conceptually. </span>
+<span id="cb1-121"><a href="#cb1-121" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-122"><a href="#cb1-122" aria-hidden="true" tabindex="-1"></a><span class="at">&gt; "This resampling is never done, and in general it doesn't even make sense--it is absurd to consider repeat sampling of the diversification of song birds in the Andes. As Sir Ronald Fisher, one of the most important frequentist statisticians of the twentieth century, put it: 'the only populations that can be referred to in a test of significance have no objective reality, being exclusively the product of the statistician's imagination.'" (11)</span></span>
+<span id="cb1-123"><a href="#cb1-123" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-124"><a href="#cb1-124" aria-hidden="true" tabindex="-1"></a>Quite the interesting closing paragraph of page 11, stating that _"Bayesian golems treat 'randomness' as a property of information, not of the world."_ </span>
+<span id="cb1-125"><a href="#cb1-125" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-126"><a href="#cb1-126" aria-hidden="true" tabindex="-1"></a><span class="at">&gt; "Nothing in the real world--excepting controversial interpretations of quantum physics--is actually random. Presumably, if we had more information, we could exactly predict everything. We just use randomness to describe our uncertainty in the face of incomplete knowledge. From the perspective of our golem, the coin toss is 'random', but it's really the golem that is random, not the coin." (11)</span></span>
+<span id="cb1-127"><a href="#cb1-127" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-128"><a href="#cb1-128" aria-hidden="true" tabindex="-1"></a>He acknowledges the quantum point here. But that is precisely one of the main objections to the idea of "everything being predictable". This is a potentially useful way to view a lot of things that are studied, because it makes a lot of sense, but probability fields in quantum physics seem to point to something deeper at a more fundamental level. This is explicitly discussed in the book, <span class="co">[</span><span class="ot">_Light of the Mind, Light of the World: Illuminating Science Through Faith_</span><span class="co">](https://www.amazon.com/Light-Mind-World-Science-Illuminating/dp/1684515335)</span>. It's a central theme in the book, but Chapter 3 in particular discusses the "small gods" as being those who view the world from this mechanical philosophy: _"a conviction that the world was made of bodies, whose movements and collisions were as sharply regulated as those displayed by an intricately calibrated machine...if they could be described using numbers alone, atoms might reveal the truth underlying all things" (page 69)_.</span>
+<span id="cb1-129"><a href="#cb1-129" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-130"><a href="#cb1-130" aria-hidden="true" tabindex="-1"></a><span class="fu">### Bayesianing, not Bayesianism</span></span>
+<span id="cb1-131"><a href="#cb1-131" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-132"><a href="#cb1-132" aria-hidden="true" tabindex="-1"></a>He further solidifies his stance that he's not using Bayesian modeling on ideological grounds.</span>
+<span id="cb1-133"><a href="#cb1-133" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-134"><a href="#cb1-134" aria-hidden="true" tabindex="-1"></a><span class="at">&gt; "Note that the preceding description doesn't invoke anyone's 'beliefs' or subjective opinions. Bayesian data analysis is just a logical procedure for processing information. There is a tradition of using this procedure as a normative description of rational belief, a tradition called Bayesianism. But this book neither describes nor advocates it. In fact, I'll argue that no statistical approach, Bayesian or otherwise, is by itself sufficient." (12)</span></span>
+<span id="cb1-135"><a href="#cb1-135" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-136"><a href="#cb1-136" aria-hidden="true" tabindex="-1"></a>He then goes on to describe the advantage of Bayesian analysis--it is more intuitive. People can grasp the practical implications easier, and it just makes sense. Otherwise you are just trying to remember some steps or criteria or what boilerplate sentence to write about a p-value, without actually thinking through what it means. The interesting case he makes it how often a p-value (or confidence interval) is interpreted like a _posterior probability_ ([go back up the page](chapter1inching), this is related to the _fallacy of the transposed conditional_ as well), but the reverse is not done.</span>
+<span id="cb1-137"><a href="#cb1-137" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-138"><a href="#cb1-138" aria-hidden="true" tabindex="-1"></a><span class="at">&gt; "The opposite pattern of mistake--interpreting a posterior probability as a p-value--seems to happen only rarely. None of this ensures Bayesian analysis will be more correct...the scientist's intuition will less commonly be at odds with actual logic of the framework." (12)</span></span>
+<span id="cb1-139"><a href="#cb1-139" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-140"><a href="#cb1-140" aria-hidden="true" tabindex="-1"></a><span class="fu">## Centering the model</span></span>
+<span id="cb1-141"><a href="#cb1-141" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-142"><a href="#cb1-142" aria-hidden="true" tabindex="-1"></a>As I've been learning about statistical history, philosophy, and Bayesian thinking, one huge differentiator I've realized is the basic idea that in the Bayesian setting, the _model_ becomes the center of attention, and the _data_ is just there to supplement it. To me, this changes the entire view of the problem. I've talked about this before, like in <span class="co">[</span><span class="ot">this blog post</span><span class="co">](https://www.centralstatz.com/posts/can-you-have-a-model-without-data/)</span>, and in this supporting video:</span>
+<span id="cb1-143"><a href="#cb1-143" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-144"><a href="#cb1-144" aria-hidden="true" tabindex="-1"></a>{{&lt; video https://www.youtube.com/embed/bUerkVsCwtA &gt;}}</span>
+<span id="cb1-145"><a href="#cb1-145" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-146"><a href="#cb1-146" aria-hidden="true" tabindex="-1"></a>I bring this up because the first sentence of section 1.3.2, although stated casually, is very profound:</span>
+<span id="cb1-147"><a href="#cb1-147" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-148"><a href="#cb1-148" aria-hidden="true" tabindex="-1"></a><span class="at">&gt; "Bayesian data analysis provides a way for models to learn from data." (13)</span></span>
+<span id="cb1-149"><a href="#cb1-149" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-150"><a href="#cb1-150" aria-hidden="true" tabindex="-1"></a>The emphasis being that our _model_ can learn from data. Meaning our _model_ is a constant, a living, breathing object that describes the world. We only use data, as it comes and goes, to help inform that model as it is needed. </span>
+<span id="cb1-151"><a href="#cb1-151" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-152"><a href="#cb1-152" aria-hidden="true" tabindex="-1"></a><span class="fu">### Beyond accuracy</span></span>
+<span id="cb1-153"><a href="#cb1-153" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-154"><a href="#cb1-154" aria-hidden="true" tabindex="-1"></a>He talks about the concept of overfitting, and the need for cross-validation, etc. But one attribute of Bayesian thinking that is related to this is the fact that multiple models can produce the same predictions, and so choosing the simpler one is in large part what Bayesian thinking does. So beyond getting good predictions, we're chosen the model/mechanism that more likely generated the data. There is a <span class="co">[</span><span class="ot">fascinating paper</span><span class="co">](https://nyaspubs.onlinelibrary.wiley.com/doi/10.1111/nyas.15086)</span> related to this topic that discusses how Bayesian modeling is essentially the realization of <span class="co">[</span><span class="ot">Occam's Razor</span><span class="co">](https://en.wikipedia.org/wiki/Occam%27s_razor)</span>--definitely worth the read.</span>
+<span id="cb1-155"><a href="#cb1-155" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-156"><a href="#cb1-156" aria-hidden="true" tabindex="-1"></a><span class="fu">### A multilevel approach</span></span>
+<span id="cb1-157"><a href="#cb1-157" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-158"><a href="#cb1-158" aria-hidden="true" tabindex="-1"></a>He implicitly describes _multilevel models_ as a key concept in this book. Yes, these are models that we think of: individual students in classrooms, classrooms in schools, schools in district, etc. But the _effect_ of using these models is profound:</span>
+<span id="cb1-159"><a href="#cb1-159" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-160"><a href="#cb1-160" aria-hidden="true" tabindex="-1"></a><span class="at">&gt; "Cross-validation and information criteria measure overfitting risk and help us to recognize it. Multilevel models actually do something about it." (14)</span></span>
+<span id="cb1-161"><a href="#cb1-161" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-162"><a href="#cb1-162" aria-hidden="true" tabindex="-1"></a>_Partial pooling_ is what allows us to structure models and share information very it is necessary, while preserving variation and other important components of the data-generating process. In this sense, he extends this concept more generally to how we can think about multilevel modeling, in the context of missing data, factor analysis, etc. The concept that _"each parameter can be thought of as a placeholder for a missing model"_ makes you realize the hierarchical structure of every modeling process.</span>
+<span id="cb1-163"><a href="#cb1-163" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-164"><a href="#cb1-164" aria-hidden="true" tabindex="-1"></a>He then makes a big claim: _"multilevel regression deserves to be the default form of regression"_. Stating that papers should have to justify _not_ doing this, rather than the current practice. Intuitively, I think this makes sense. Part of the reason you can easily critique this in academic papers is because there are a lot of things worth critiquing, stemming from things like the cult of statistical significance, poor publication standards, reliance on "positive" p-values, and overall lack of accountability for anything that happens with the results beyond them being printed on a page, leaving open an infinite number of ways to "do" a study and get it published...but I digress.</span>
+<span id="cb1-165"><a href="#cb1-165" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-166"><a href="#cb1-166" aria-hidden="true" tabindex="-1"></a><span class="at">&gt; "Fitting and interpreting multilevel models can be considerably harder than fitting and interpreting a traditional regression model." (15)</span></span>
+<span id="cb1-167"><a href="#cb1-167" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-168"><a href="#cb1-168" aria-hidden="true" tabindex="-1"></a>Exactly. It's harder. And there's no incentive to do it, because they'll still get the funding and publication, so same end result. </span>
+<span id="cb1-169"><a href="#cb1-169" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-170"><a href="#cb1-170" aria-hidden="true" tabindex="-1"></a><span class="fu">## Mechanism and causality</span></span>
+<span id="cb1-171"><a href="#cb1-171" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-172"><a href="#cb1-172" aria-hidden="true" tabindex="-1"></a><span class="at">&gt; "Facts outside the data are needed to decide which explanation is correct." (16)</span></span>
+<span id="cb1-173"><a href="#cb1-173" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-174"><a href="#cb1-174" aria-hidden="true" tabindex="-1"></a>He makes a similar point here described above, that models can have similar predictions but not be the true causal mechanism. This has to do with overfitting (think the geocentric vs. heliocentric models), and inferring what makes sense logically regardless of the outputs of the model.</span>
+<span id="cb1-175"><a href="#cb1-175" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-176"><a href="#cb1-176" aria-hidden="true" tabindex="-1"></a>The concept of _identification_ is very important here, because it distinguishes the simple act of predicting what will happen (i.e., I can _predict_ that the wind is blowing given I see tree branches swaying) versus _intervening_ on a process and inferring what will happen as a result (I can't then go and move the branches around to make wind start blowing (besides the force generated from the branches which is different))</span>
+<span id="cb1-177"><a href="#cb1-177" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-178"><a href="#cb1-178" aria-hidden="true" tabindex="-1"></a><span class="fu">### The diagram</span></span>
+<span id="cb1-179"><a href="#cb1-179" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-180"><a href="#cb1-180" aria-hidden="true" tabindex="-1"></a>We will use _directed acyclic graphs (DAG)_ as the choice of _graphical causal model_ (as this isn't the only kind). They are not models themselves, but diagrams to help us think through what model and statistical procedures are most appropriate for the research question.</span>
+<span id="cb1-181"><a href="#cb1-181" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-182"><a href="#cb1-182" aria-hidden="true" tabindex="-1"></a>In the "Rethinking" box he makes the point about _causal salad_, which is just the idea that we can do causal inference by "adjusting for all confounders", which is a very common practice in science, to just throw everything we can think of in a regression model and say we "controlled" for stuff. It's curious why every one of those papers have a "limitation" section stating that causal inference can't be assumed, like a disclaimer. Tells you that the people doing this probably don't believe the results themselves, otherwise they'd be repressed to stand by such a statement.</span></code><button title="Copy to Clipboard" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></pre></div>
 </div></div></div></div></div>
 </div> <!-- /content -->
 <footer class="footer">
