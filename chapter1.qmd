@@ -180,3 +180,9 @@ The concept of _identification_ is very important here, because it distinguishes
 We will use _directed acyclic graphs (DAG)_ as the choice of _graphical causal model_ (as this isn't the only kind). They are not models themselves, but diagrams to help us think through what model and statistical procedures are most appropriate for the research question.
 
 In the "Rethinking" box he makes the point about _causal salad_, which is just the idea that we can do causal inference by "adjusting for all confounders", which is a very common practice in science, to just throw everything we can think of in a regression model and say we "controlled" for stuff. It's curious why every one of those papers have a "limitation" section stating that causal inference can't be assumed, like a disclaimer. Tells you that the people doing this probably don't believe the results themselves, otherwise they'd be repressed to stand by such a statement.
+
+<br>
+
+_Video Lecture From the Author_
+
+{{< video https://www.youtube.com/embed/FdnMWdICdRs >}}

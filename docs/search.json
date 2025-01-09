@@ -4,7 +4,7 @@
     "href": "index.html",
     "title": "A Journey Through Statistical Rethinking",
     "section": "",
-    "text": "Introduction\nThis is a repository containing my exhaustive notes and code from my journey through Richard McElreath’s Statistical Rethinking (Second Edition). Each chapter corresponds to the chapter in the book.\nAll source code is available on GitHub in this repository. The book is deployed with GitHub Pages.",
+    "text": "Introduction\nThis is a repository containing my exhaustive notes and code from my journey through Richard McElreath’s Statistical Rethinking (Second Edition). Each chapter corresponds to the chapter in the book.\nHe also has a free course on GitHub that includes slides and a video playlist.\nAll source code for this project is available on GitHub in this repository. The book is deployed with GitHub Pages.",
     "crumbs": [
       "Introduction"
     ]
@@ -114,9 +114,29 @@
     "href": "chapter1.html#mechanism-and-causality",
     "title": "1  The Golem of Prague",
     "section": "1.8 Mechanism and causality",
-    "text": "1.8 Mechanism and causality\n\n“Facts outside the data are needed to decide which explanation is correct.” (16)\n\nHe makes a similar point here described above, that models can have similar predictions but not be the true causal mechanism. This has to do with overfitting (think the geocentric vs. heliocentric models), and inferring what makes sense logically regardless of the outputs of the model.\nThe concept of identification is very important here, because it distinguishes the simple act of predicting what will happen (i.e., I can predict that the wind is blowing given I see tree branches swaying) versus intervening on a process and inferring what will happen as a result (I can’t then go and move the branches around to make wind start blowing (besides the force generated from the branches which is different))\n\n1.8.1 The diagram\nWe will use directed acyclic graphs (DAG) as the choice of graphical causal model (as this isn’t the only kind). They are not models themselves, but diagrams to help us think through what model and statistical procedures are most appropriate for the research question.\nIn the “Rethinking” box he makes the point about causal salad, which is just the idea that we can do causal inference by “adjusting for all confounders”, which is a very common practice in science, to just throw everything we can think of in a regression model and say we “controlled” for stuff. It’s curious why every one of those papers have a “limitation” section stating that causal inference can’t be assumed, like a disclaimer. Tells you that the people doing this probably don’t believe the results themselves, otherwise they’d be repressed to stand by such a statement.",
+    "text": "1.8 Mechanism and causality\n\n“Facts outside the data are needed to decide which explanation is correct.” (16)\n\nHe makes a similar point here described above, that models can have similar predictions but not be the true causal mechanism. This has to do with overfitting (think the geocentric vs. heliocentric models), and inferring what makes sense logically regardless of the outputs of the model.\nThe concept of identification is very important here, because it distinguishes the simple act of predicting what will happen (i.e., I can predict that the wind is blowing given I see tree branches swaying) versus intervening on a process and inferring what will happen as a result (I can’t then go and move the branches around to make wind start blowing (besides the force generated from the branches which is different))\n\n1.8.1 The diagram\nWe will use directed acyclic graphs (DAG) as the choice of graphical causal model (as this isn’t the only kind). They are not models themselves, but diagrams to help us think through what model and statistical procedures are most appropriate for the research question.\nIn the “Rethinking” box he makes the point about causal salad, which is just the idea that we can do causal inference by “adjusting for all confounders”, which is a very common practice in science, to just throw everything we can think of in a regression model and say we “controlled” for stuff. It’s curious why every one of those papers have a “limitation” section stating that causal inference can’t be assumed, like a disclaimer. Tells you that the people doing this probably don’t believe the results themselves, otherwise they’d be repressed to stand by such a statement.\n\nVideo Lecture From the Author",
     "crumbs": [
       "<span class='chapter-number'>1</span>  <span class='chapter-title'>The Golem of Prague</span>"
+    ]
+  },
+  {
+    "objectID": "chapter2.html",
+    "href": "chapter2.html",
+    "title": "2  Small Worlds and Large Worlds",
+    "section": "",
+    "text": "Video Lecture From the Author",
+    "crumbs": [
+      "<span class='chapter-number'>2</span>  <span class='chapter-title'>Small Worlds and Large Worlds</span>"
+    ]
+  },
+  {
+    "objectID": "chapter3.html",
+    "href": "chapter3.html",
+    "title": "3  Sampling the Imaginary",
+    "section": "",
+    "text": "Video Lecture From the Author (start at 45:17)",
+    "crumbs": [
+      "<span class='chapter-number'>3</span>  <span class='chapter-title'>Sampling the Imaginary</span>"
     ]
   }
 ]

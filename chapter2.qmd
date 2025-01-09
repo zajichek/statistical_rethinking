@@ -1,1 +1,7 @@
 # Small Worlds and Large Worlds
+
+<br>
+
+_Video Lecture From the Author_
+
+{{< video https://www.youtube.com/embed/R1vcdhPBlXA >}}
