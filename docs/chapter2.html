@@ -103,6 +103,35 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   }
 }</script>
 
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
 
 </head>
 
@@ -181,15 +210,25 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </nav>
 <div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
 <!-- margin-sidebar -->
-    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
-        
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#unraveling-the-counting-process" id="toc-unraveling-the-counting-process" class="nav-link active" data-scroll-target="#unraveling-the-counting-process"><span class="header-section-number">2.1</span> Unraveling the counting process</a>
+  <ul class="collapse">
+  <li><a href="#first-the-likelihood" id="toc-first-the-likelihood" class="nav-link" data-scroll-target="#first-the-likelihood"><span class="header-section-number">2.1.1</span> First, the likelihood</a></li>
+  <li><a href="#incorporating-prior-knowledge" id="toc-incorporating-prior-knowledge" class="nav-link" data-scroll-target="#incorporating-prior-knowledge"><span class="header-section-number">2.1.2</span> Incorporating prior knowledge</a></li>
+  </ul></li>
+  </ul>
+</nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<div class="quarto-title-block"><div><h1 class="title"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Small Worlds and Large Worlds</span></h1><button type="button" class="btn code-tools-button" id="quarto-code-tools-source"><i class="bi"></i> Code</button></div></div>
+<div class="quarto-title-block"><div><h1 class="title"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Small Worlds and Large Worlds</span></h1><button type="button" class="btn code-tools-button dropdown-toggle" id="quarto-code-tools-menu" data-bs-toggle="dropdown" aria-expanded="false"><i class="bi"></i> Code</button><ul class="dropdown-menu dropdown-menu-end" aria-labelelledby="quarto-code-tools-menu"><li><a id="quarto-show-all-code" class="dropdown-item" href="javascript:void(0)" role="button">Show All Code</a></li><li><a id="quarto-hide-all-code" class="dropdown-item" href="javascript:void(0)" role="button">Hide All Code</a></li><li><hr class="dropdown-divider"></li><li><a id="quarto-view-source" class="dropdown-item" href="javascript:void(0)" role="button">View Source</a></li></ul></div></div>
 </div>
 
 
@@ -206,6 +245,99 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </header>
 
 
+<blockquote class="blockquote">
+<p>“Colombo [Christopher Columbus] made a prediction based upon his view that the world was small. But since he lived in a large world, aspects of the prediction were wrong. In his case, the error was lucky.” (19)</p>
+</blockquote>
+<p>All models are and will always be wrong, that’s why they are called models. The “small world” represented by the model can only hope to be reflective of “large world”, the actual environment in which the model, insights, and inference that come out of it are used (i.e., where the rubber meets the road).</p>
+<section id="unraveling-the-counting-process" class="level2" data-number="2.1">
+<h2 data-number="2.1" class="anchored" data-anchor-id="unraveling-the-counting-process"><span class="header-section-number">2.1</span> Unraveling the counting process</h2>
+<p>The “garden of forking paths” idea is about stretching out the process for counting things. Often in statistics, we just use formulas, or integrals, or whatever other notation to think through logic in our heads. This fundamental, systematic approach to counting lets us see what’s really going on behind the scenes. Ultimately, this leads to a more intuitive understanding of what Bayesian modeling is (in McElreath’s words): <em>“really just counting and comparing of possibilities”</em> (20).</p>
+<section id="first-the-likelihood" class="level3" data-number="2.1.1">
+<h3 data-number="2.1.1" class="anchored" data-anchor-id="first-the-likelihood"><span class="header-section-number">2.1.1</span> First, the likelihood</h3>
+<p>In the marble example, he starts by counting the number of ways a particular observed sequence of marble draws could have occurred <em>given</em> a assumed true state of the bag (i.e., a hypothesis, which he calls <em>conjecture</em>). Then proceeds to manually count (and draw) the possibilities–nothing fancy about it, just brute force. Once this count is obtained, the question becomes: <em>what is this collection of counts for all other possible states of the bag?</em>. This is getting at what Bayesian analysis fundamentally is: determining which state of the world is most likely given the evidence.</p>
+<blockquote class="blockquote">
+<p>“By comparing these counts, we have part of a solution for a way to rate the relative plausibility of each conjectured bag composition.” (23)</p>
+</blockquote>
+<p>The word <em>relative</em> foreshadows many implications in Bayesian analysis, such as the focus on priors and likelihoods (not the normalizing constant), the different approaches to getting at the same answer (counts, rates, etc.), and the focus of comparing possible hypotheses relative to one another (and the whole slate of possibilities).</p>
+<section id="translating-to-familar-notation" class="level4" data-number="2.1.1.1">
+<h4 data-number="2.1.1.1" class="anchored" data-anchor-id="translating-to-familar-notation"><span class="header-section-number">2.1.1.1</span> Translating to familar notation</h4>
+<p>Since I come at this from the “traditional” statistical point of view, it’s helpful to reconcile the approach here with the way I would typically think about it. Namely, we have a bag with four (4) marbles in it, each one being white or blue. Based on a sample from the bag, we want to infer what make up of all marbles is. Thus, the unknown parameter can be thought of as <span class="math inline">\(p\)</span>, the proportion of marbles that are blue (or white if we wanted). So, <span class="math inline">\(p\)</span> can be one of five choices: <span class="math inline">\(p \in (0, .25, .5, .75, 1)\)</span>. On page 21 it was stated that <em>“a sequence of three marbles is pulled from the bag, one at a time, replacing the marble each time and shaking the bag before drawing another marble”</em>–so we are <em>assuming</em> that we are selecting randomly with replacement (as a side note, a key point is our assumption: we are using our judgement that the sampling method (shaking randomly) is sufficient to assume random, independent draws, but this paradigm leaves the possibility to account for modeling steps where this assumption may not be valid).</p>
+<p>If we take <span class="math inline">\(N=3\)</span> draws and <span class="math inline">\(X=2\)</span> is the number that were blue, then we can think of:</p>
+<p><span class="math inline">\(X \sim Binomial(N=3, p)\)</span></p>
+<p>And we get the following counts of possible ways to observe this sequence for each value of <span class="math inline">\(p\)</span>.</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Possible values of p</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>p <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">0</span>, .<span class="dv">25</span>, .<span class="dv">5</span>, .<span class="dv">75</span>, <span class="dv">1</span>)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>marbles <span class="ot">&lt;-</span> <span class="fu">length</span>(p) <span class="sc">-</span> <span class="dv">1</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Number of samples</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>N <span class="ot">&lt;-</span> <span class="dv">3</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Observed sequence (1 = blue, 0 = white)</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>X <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">0</span>, <span class="dv">1</span>)</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>X <span class="ot">&lt;-</span> <span class="fu">sum</span>(X)</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a><span class="co"># How many ways could this happen for each p?</span></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>ways <span class="ot">&lt;-</span> (marbles <span class="sc">*</span> p)<span class="sc">^</span>X <span class="sc">*</span> (marbles <span class="sc">*</span> (<span class="dv">1</span><span class="sc">-</span>p))<span class="sc">^</span>(N<span class="sc">-</span>X)</span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a><span class="fu">cbind</span>(p, ways, <span class="at">posterior_probability =</span> ways <span class="sc">/</span> <span class="fu">sum</span>(ways))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>        p ways posterior_probability
+[1,] 0.00    0                  0.00
+[2,] 0.25    3                  0.15
+[3,] 0.50    8                  0.40
+[4,] 0.75    9                  0.45
+[5,] 1.00    0                  0.00</code></pre>
+</div>
+</div>
+<p>This matches what is in the book on page 23. Why? Well because there is a finite number of marbles, and we are re-scaling to be in absolute terms relative to that, instead of being in rate terms. The point is that we can think of the counting process in absolute magnitude (counts), relative (probabilities), or even likelihoods (basically, non-normalized probabilities). They will all produce the <em>same</em> posterior probability suggesting that the bag most likely has 3 blue marbles, because our calculation is <em>relative</em> to span of possible hypotheses (conjectures).</p>
+<p>Here we use the full <a href="https://en.wikipedia.org/wiki/Binomial_distribution">binomial</a> distribution for our calculations:</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Compute traditional binomial probabilities</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>binom_probs <span class="ot">&lt;-</span> <span class="fu">dbinom</span>(<span class="at">x =</span> X, <span class="at">size =</span> N, <span class="at">prob =</span> p)</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="fu">cbind</span>(p, binom_probs, <span class="at">posterior_probability =</span> binom_probs <span class="sc">/</span> <span class="fu">sum</span>(binom_probs))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>        p binom_probs posterior_probability
+[1,] 0.00    0.000000                  0.00
+[2,] 0.25    0.140625                  0.15
+[3,] 0.50    0.375000                  0.40
+[4,] 0.75    0.421875                  0.45
+[5,] 1.00    0.000000                  0.00</code></pre>
+</div>
+</div>
+<p>Now we could even do it without it being normalized (i.e., we don’t care if it adds to 1):</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Compute unnormalized probabilities</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>unnorm_probs <span class="ot">&lt;-</span> p<span class="sc">^</span>X <span class="sc">*</span> (<span class="dv">1</span><span class="sc">-</span>p)<span class="sc">^</span>(N<span class="sc">-</span>X)</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="fu">cbind</span>(p, unnorm_probs, <span class="at">posterior_probability =</span> unnorm_probs <span class="sc">/</span> <span class="fu">sum</span>(unnorm_probs))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>        p unnorm_probs posterior_probability
+[1,] 0.00     0.000000                  0.00
+[2,] 0.25     0.046875                  0.15
+[3,] 0.50     0.125000                  0.40
+[4,] 0.75     0.140625                  0.45
+[5,] 1.00     0.000000                  0.00</code></pre>
+</div>
+</div>
+<p>They all lead to same <em>relative</em> posterior probability (3 blue marbles).</p>
+<p>One key caveat here that comes next: these results assume that each value of <span class="math inline">\(p\)</span> is equally likely. But as he points out:</p>
+<blockquote class="blockquote">
+<p>“We may have additional information about the relative plausibility of each conjecture. This information could arise from knowledge of how the contens of the bag were generated.” (25)</p>
+</blockquote>
+<p>This gets at the idea of a <em>prior</em> distribution. We may know something about how the bag was arranged, such that we have an inkling that a particular value of <span class="math inline">\(p\)</span> is more likely to be true than the rest. In that case, what we have done above doesn’t work.</p>
+</section>
+</section>
+<section id="incorporating-prior-knowledge" class="level3" data-number="2.1.2">
+<h3 data-number="2.1.2" class="anchored" data-anchor-id="incorporating-prior-knowledge"><span class="header-section-number">2.1.2</span> Incorporating prior knowledge</h3>
 <p><br></p>
 <p><em>Video Lecture From the Author</em></p>
 <div class="quarto-video ratio ratio-16x9"><iframe data-external="1" src="https://www.youtube.com/embed/R1vcdhPBlXA" title="" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen=""></iframe></div>
@@ -213,6 +345,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 <!-- -->
 
+</section>
+</section>
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
@@ -698,13 +832,89 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
       </a>
   </div>
 </nav><div class="modal fade" id="quarto-embedded-source-code-modal" tabindex="-1" aria-labelledby="quarto-embedded-source-code-modal-label" aria-hidden="true"><div class="modal-dialog modal-dialog-scrollable"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" id="quarto-embedded-source-code-modal-label">Source Code</h5><button class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><div class="">
-<div class="sourceCode" id="cb1" data-shortcodes="false"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu"># Small Worlds and Large Worlds</span></span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>&lt;br&gt;</span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>_Video Lecture From the Author_</span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>{{&lt; video https://www.youtube.com/embed/R1vcdhPBlXA &gt;}}</span></code><button title="Copy to Clipboard" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb7" data-shortcodes="false"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu"># Small Worlds and Large Worlds</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="at">&gt; "Colombo </span><span class="co">[</span><span class="ot">Christopher Columbus</span><span class="co">]</span><span class="at"> made a prediction based upon his view that the world was small. But since he lived in a large world, aspects of the prediction were wrong. In his case, the error was lucky." (19)</span></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>All models are and will always be wrong, that's why they are called models. The "small world" represented by the model can only hope to be reflective of "large world", the actual environment in which the model, insights, and inference that come out of it are used (i.e., where the rubber meets the road).</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a><span class="fu">## Unraveling the counting process</span></span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>The "garden of forking paths" idea is about stretching out the process for counting things. Often in statistics, we just use formulas, or integrals, or whatever other notation to think through logic in our heads. This fundamental, systematic approach to counting lets us see what's really going on behind the scenes. Ultimately, this leads to a more intuitive understanding of what Bayesian modeling is (in McElreath's words): _"really just counting and comparing of possibilities"_ (20).</span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a><span class="fu">### First, the likelihood</span></span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a>In the marble example, he starts by counting the number of ways a particular observed sequence of marble draws could have occurred _given_ a assumed true state of the bag (i.e., a hypothesis, which he calls _conjecture_). Then proceeds to manually count (and draw) the possibilities--nothing fancy about it, just brute force. Once this count is obtained, the question becomes: _what is this collection of counts for all other possible states of the bag?_. This is getting at what Bayesian analysis fundamentally is: determining which state of the world is most likely given the evidence.</span>
+<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a><span class="at">&gt; "By comparing these counts, we have part of a solution for a way to rate the relative plausibility of each conjectured bag composition." (23)</span></span>
+<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a>The word _relative_ foreshadows many implications in Bayesian analysis, such as the focus on priors and likelihoods (not the normalizing constant), the different approaches to getting at the same answer (counts, rates, etc.), and the focus of comparing possible hypotheses relative to one another (and the whole slate of possibilities).</span>
+<span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-19"><a href="#cb7-19" aria-hidden="true" tabindex="-1"></a><span class="fu">#### Translating to familar notation</span></span>
+<span id="cb7-20"><a href="#cb7-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-21"><a href="#cb7-21" aria-hidden="true" tabindex="-1"></a>Since I come at this from the "traditional" statistical point of view, it's helpful to reconcile the approach here with the way I would typically think about it. Namely, we have a bag with four (4) marbles in it, each one being white or blue. Based on a sample from the bag, we want to infer what make up of all marbles is. Thus, the unknown parameter can be thought of as $p$, the proportion of marbles that are blue (or white if we wanted). So, $p$ can be one of five choices: $p \in (0, .25, .5, .75, 1)$. On page 21 it was stated that _"a sequence of three marbles is pulled from the bag, one at a time, replacing the marble each time and shaking the bag before drawing another marble"_--so we are _assuming_ that we are selecting randomly with replacement (as a side note, a key point is our assumption: we are using our judgement that the sampling method (shaking randomly) is sufficient to assume random, independent draws, but this paradigm leaves the possibility to account for modeling steps where this assumption may not be valid).</span>
+<span id="cb7-22"><a href="#cb7-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-23"><a href="#cb7-23" aria-hidden="true" tabindex="-1"></a>If we take $N=3$ draws and $X=2$ is the number that were blue, then we can think of:</span>
+<span id="cb7-24"><a href="#cb7-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-25"><a href="#cb7-25" aria-hidden="true" tabindex="-1"></a>$X \sim Binomial(N=3, p)$</span>
+<span id="cb7-26"><a href="#cb7-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-27"><a href="#cb7-27" aria-hidden="true" tabindex="-1"></a>And we get the following counts of possible ways to observe this sequence for each value of $p$.</span>
+<span id="cb7-28"><a href="#cb7-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-31"><a href="#cb7-31" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb7-32"><a href="#cb7-32" aria-hidden="true" tabindex="-1"></a><span class="co"># Possible values of p</span></span>
+<span id="cb7-33"><a href="#cb7-33" aria-hidden="true" tabindex="-1"></a>p <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">0</span>, .<span class="dv">25</span>, .<span class="dv">5</span>, .<span class="dv">75</span>, <span class="dv">1</span>)</span>
+<span id="cb7-34"><a href="#cb7-34" aria-hidden="true" tabindex="-1"></a>marbles <span class="ot">&lt;-</span> <span class="fu">length</span>(p) <span class="sc">-</span> <span class="dv">1</span></span>
+<span id="cb7-35"><a href="#cb7-35" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-36"><a href="#cb7-36" aria-hidden="true" tabindex="-1"></a><span class="co"># Number of samples</span></span>
+<span id="cb7-37"><a href="#cb7-37" aria-hidden="true" tabindex="-1"></a>N <span class="ot">&lt;-</span> <span class="dv">3</span></span>
+<span id="cb7-38"><a href="#cb7-38" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-39"><a href="#cb7-39" aria-hidden="true" tabindex="-1"></a><span class="co"># Observed sequence (1 = blue, 0 = white)</span></span>
+<span id="cb7-40"><a href="#cb7-40" aria-hidden="true" tabindex="-1"></a>X <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">0</span>, <span class="dv">1</span>)</span>
+<span id="cb7-41"><a href="#cb7-41" aria-hidden="true" tabindex="-1"></a>X <span class="ot">&lt;-</span> <span class="fu">sum</span>(X)</span>
+<span id="cb7-42"><a href="#cb7-42" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-43"><a href="#cb7-43" aria-hidden="true" tabindex="-1"></a><span class="co"># How many ways could this happen for each p?</span></span>
+<span id="cb7-44"><a href="#cb7-44" aria-hidden="true" tabindex="-1"></a>ways <span class="ot">&lt;-</span> (marbles <span class="sc">*</span> p)<span class="sc">^</span>X <span class="sc">*</span> (marbles <span class="sc">*</span> (<span class="dv">1</span><span class="sc">-</span>p))<span class="sc">^</span>(N<span class="sc">-</span>X)</span>
+<span id="cb7-45"><a href="#cb7-45" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-46"><a href="#cb7-46" aria-hidden="true" tabindex="-1"></a><span class="fu">cbind</span>(p, ways, <span class="at">posterior_probability =</span> ways <span class="sc">/</span> <span class="fu">sum</span>(ways))</span>
+<span id="cb7-47"><a href="#cb7-47" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-48"><a href="#cb7-48" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb7-49"><a href="#cb7-49" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-50"><a href="#cb7-50" aria-hidden="true" tabindex="-1"></a>This matches what is in the book on page 23. Why? Well because there is a finite number of marbles, and we are re-scaling to be in absolute terms relative to that, instead of being in rate terms. The point is that we can think of the counting process in absolute magnitude (counts), relative (probabilities), or even likelihoods (basically, non-normalized probabilities). They will all produce the _same_ posterior probability suggesting that the bag most likely has 3 blue marbles, because our calculation is _relative_ to span of possible hypotheses (conjectures). </span>
+<span id="cb7-51"><a href="#cb7-51" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-52"><a href="#cb7-52" aria-hidden="true" tabindex="-1"></a>Here we use the full <span class="co">[</span><span class="ot">binomial</span><span class="co">](https://en.wikipedia.org/wiki/Binomial_distribution)</span> distribution for our calculations:</span>
+<span id="cb7-53"><a href="#cb7-53" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-56"><a href="#cb7-56" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb7-57"><a href="#cb7-57" aria-hidden="true" tabindex="-1"></a><span class="co"># Compute traditional binomial probabilities</span></span>
+<span id="cb7-58"><a href="#cb7-58" aria-hidden="true" tabindex="-1"></a>binom_probs <span class="ot">&lt;-</span> <span class="fu">dbinom</span>(<span class="at">x =</span> X, <span class="at">size =</span> N, <span class="at">prob =</span> p)</span>
+<span id="cb7-59"><a href="#cb7-59" aria-hidden="true" tabindex="-1"></a><span class="fu">cbind</span>(p, binom_probs, <span class="at">posterior_probability =</span> binom_probs <span class="sc">/</span> <span class="fu">sum</span>(binom_probs))</span>
+<span id="cb7-60"><a href="#cb7-60" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb7-61"><a href="#cb7-61" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-62"><a href="#cb7-62" aria-hidden="true" tabindex="-1"></a>Now we could even do it without it being normalized (i.e., we don't care if it adds to 1):</span>
+<span id="cb7-63"><a href="#cb7-63" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-66"><a href="#cb7-66" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb7-67"><a href="#cb7-67" aria-hidden="true" tabindex="-1"></a><span class="co"># Compute unnormalized probabilities</span></span>
+<span id="cb7-68"><a href="#cb7-68" aria-hidden="true" tabindex="-1"></a>unnorm_probs <span class="ot">&lt;-</span> p<span class="sc">^</span>X <span class="sc">*</span> (<span class="dv">1</span><span class="sc">-</span>p)<span class="sc">^</span>(N<span class="sc">-</span>X)</span>
+<span id="cb7-69"><a href="#cb7-69" aria-hidden="true" tabindex="-1"></a><span class="fu">cbind</span>(p, unnorm_probs, <span class="at">posterior_probability =</span> unnorm_probs <span class="sc">/</span> <span class="fu">sum</span>(unnorm_probs))</span>
+<span id="cb7-70"><a href="#cb7-70" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb7-71"><a href="#cb7-71" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-72"><a href="#cb7-72" aria-hidden="true" tabindex="-1"></a>They all lead to same _relative_ posterior probability (3 blue marbles).</span>
+<span id="cb7-73"><a href="#cb7-73" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-74"><a href="#cb7-74" aria-hidden="true" tabindex="-1"></a>One key caveat here that comes next: these results assume that each value of $p$ is equally likely. But as he points out:</span>
+<span id="cb7-75"><a href="#cb7-75" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-76"><a href="#cb7-76" aria-hidden="true" tabindex="-1"></a><span class="at">&gt; "We may have additional information about the relative plausibility of each conjecture. This information could arise from knowledge of how the contens of the bag were generated." (25)</span></span>
+<span id="cb7-77"><a href="#cb7-77" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-78"><a href="#cb7-78" aria-hidden="true" tabindex="-1"></a>This gets at the idea of a _prior_ distribution. We may know something about how the bag was arranged, such that we have an inkling that a particular value of $p$ is more likely to be true than the rest. In that case, what we have done above doesn't work.</span>
+<span id="cb7-79"><a href="#cb7-79" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-80"><a href="#cb7-80" aria-hidden="true" tabindex="-1"></a><span class="fu">### Incorporating prior knowledge</span></span>
+<span id="cb7-81"><a href="#cb7-81" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-82"><a href="#cb7-82" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-83"><a href="#cb7-83" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-84"><a href="#cb7-84" aria-hidden="true" tabindex="-1"></a>&lt;br&gt;</span>
+<span id="cb7-85"><a href="#cb7-85" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-86"><a href="#cb7-86" aria-hidden="true" tabindex="-1"></a>_Video Lecture From the Author_</span>
+<span id="cb7-87"><a href="#cb7-87" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-88"><a href="#cb7-88" aria-hidden="true" tabindex="-1"></a>{{&lt; video https://www.youtube.com/embed/R1vcdhPBlXA &gt;}}</span>
+</code><button title="Copy to Clipboard" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></pre></div>
 </div></div></div></div></div>
 </div> <!-- /content -->
 <footer class="footer">

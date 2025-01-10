@@ -1,5 +1,80 @@
 # Small Worlds and Large Worlds
 
+> "Colombo [Christopher Columbus] made a prediction based upon his view that the world was small. But since he lived in a large world, aspects of the prediction were wrong. In his case, the error was lucky." (19)
+
+All models are and will always be wrong, that's why they are called models. The "small world" represented by the model can only hope to be reflective of "large world", the actual environment in which the model, insights, and inference that come out of it are used (i.e., where the rubber meets the road).
+
+## Unraveling the counting process
+
+The "garden of forking paths" idea is about stretching out the process for counting things. Often in statistics, we just use formulas, or integrals, or whatever other notation to think through logic in our heads. This fundamental, systematic approach to counting lets us see what's really going on behind the scenes. Ultimately, this leads to a more intuitive understanding of what Bayesian modeling is (in McElreath's words): _"really just counting and comparing of possibilities"_ (20).
+
+### First, the likelihood
+
+In the marble example, he starts by counting the number of ways a particular observed sequence of marble draws could have occurred _given_ a assumed true state of the bag (i.e., a hypothesis, which he calls _conjecture_). Then proceeds to manually count (and draw) the possibilities--nothing fancy about it, just brute force. Once this count is obtained, the question becomes: _what is this collection of counts for all other possible states of the bag?_. This is getting at what Bayesian analysis fundamentally is: determining which state of the world is most likely given the evidence.
+
+> "By comparing these counts, we have part of a solution for a way to rate the relative plausibility of each conjectured bag composition." (23)
+
+The word _relative_ foreshadows many implications in Bayesian analysis, such as the focus on priors and likelihoods (not the normalizing constant), the different approaches to getting at the same answer (counts, rates, etc.), and the focus of comparing possible hypotheses relative to one another (and the whole slate of possibilities).
+
+#### Translating to familar notation
+
+Since I come at this from the "traditional" statistical point of view, it's helpful to reconcile the approach here with the way I would typically think about it. Namely, we have a bag with four (4) marbles in it, each one being white or blue. Based on a sample from the bag, we want to infer what make up of all marbles is. Thus, the unknown parameter can be thought of as $p$, the proportion of marbles that are blue (or white if we wanted). So, $p$ can be one of five choices: $p \in (0, .25, .5, .75, 1)$. On page 21 it was stated that _"a sequence of three marbles is pulled from the bag, one at a time, replacing the marble each time and shaking the bag before drawing another marble"_--so we are _assuming_ that we are selecting randomly with replacement (as a side note, a key point is our assumption: we are using our judgement that the sampling method (shaking randomly) is sufficient to assume random, independent draws, but this paradigm leaves the possibility to account for modeling steps where this assumption may not be valid).
+
+If we take $N=3$ draws and $X=2$ is the number that were blue, then we can think of:
+
+$X \sim Binomial(N=3, p)$
+
+And we get the following counts of possible ways to observe this sequence for each value of $p$.
+
+```{r}
+# Possible values of p
+p <- c(0, .25, .5, .75, 1)
+marbles <- length(p) - 1
+
+# Number of samples
+N <- 3
+
+# Observed sequence (1 = blue, 0 = white)
+X <- c(1, 0, 1)
+X <- sum(X)
+
+# How many ways could this happen for each p?
+ways <- (marbles * p)^X * (marbles * (1-p))^(N-X)
+
+cbind(p, ways, posterior_probability = ways / sum(ways))
+
+```
+
+This matches what is in the book on page 23. Why? Well because there is a finite number of marbles, and we are re-scaling to be in absolute terms relative to that, instead of being in rate terms. The point is that we can think of the counting process in absolute magnitude (counts), relative (probabilities), or even likelihoods (basically, non-normalized probabilities). They will all produce the _same_ posterior probability suggesting that the bag most likely has 3 blue marbles, because our calculation is _relative_ to span of possible hypotheses (conjectures). 
+
+Here we use the full [binomial](https://en.wikipedia.org/wiki/Binomial_distribution) distribution for our calculations:
+
+```{r}
+# Compute traditional binomial probabilities
+binom_probs <- dbinom(x = X, size = N, prob = p)
+cbind(p, binom_probs, posterior_probability = binom_probs / sum(binom_probs))
+```
+
+Now we could even do it without it being normalized (i.e., we don't care if it adds to 1):
+
+```{r}
+# Compute unnormalized probabilities
+unnorm_probs <- p^X * (1-p)^(N-X)
+cbind(p, unnorm_probs, posterior_probability = unnorm_probs / sum(unnorm_probs))
+```
+
+They all lead to same _relative_ posterior probability (3 blue marbles).
+
+One key caveat here that comes next: these results assume that each value of $p$ is equally likely. But as he points out:
+
+> "We may have additional information about the relative plausibility of each conjecture. This information could arise from knowledge of how the contens of the bag were generated." (25)
+
+This gets at the idea of a _prior_ distribution. We may know something about how the bag was arranged, such that we have an inkling that a particular value of $p$ is more likely to be true than the rest. In that case, what we have done above doesn't work.
+
+### Incorporating prior knowledge
+
+
+
 <br>
 
 _Video Lecture From the Author_
