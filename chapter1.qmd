@@ -12,7 +12,7 @@ It's often the case that statistics is taught straight from this _golem_ point o
 
 > "So students and many scientists tend to use charts like [the testing decision tree] without much thought to their underlying structure, without much awareness of the models that each procedure embodies, and without any framework to help them make the inevitable compromises required by real research. It's not their fault." (3)
 
-McElreath compares this to plumbers doing their jobs without knowing fluid dynamics, implying it can be "fine" in certain contexts. It's when the user steps outside of the intended use by extrapolating: _"It's as if we got out hydraulic engineers by promoting plumbers" (3)_. Now I get the point there, but I think there probably _is_ inherent knowledge that plumbers could contribute to the hydraulic engineering process, which seems to be an afterthought here.
+McElreath compares this to plumbers doing their jobs without knowing fluid dynamics, implying it can be "fine" in certain contexts. It's when the user steps outside of the intended use by extrapolating: _"It's as if we got our hydraulic engineers by promoting plumbers" (3)_. Now I get the point there, but I think there probably _is_ inherent knowledge that plumbers could contribute to the hydraulic engineering process, which seems to be an afterthought here.
 
 ### Good to play in everyone's yard?
 
@@ -62,7 +62,7 @@ This means that the way we represent, estimate, or quantify the process then sho
 
 > "Process models allow us to design statistical models with [e.g., unobserved variables and sampling bias] in mind. The statistical model alone is not enough." (7)
 
-## Inching towards Bayes {chapter1inching}
+## Inching towards Bayes {#chapter1inching}
 
 The first part of section 1.2.2 (and everthing leading up to it) hints at a Bayesian point of view. 
 
@@ -76,7 +76,7 @@ and is a central point to one of my favorite books, [_The Cult of Statistical Si
 
 ### Measuring things
 
-The _all swans are white_ null example is useful as reference point to compare with other important scientific hypotheses we are truly after. In this case, with such a "big" statement (applying to ALL swans) you just need to see one black one and it's over and done with. But the problem, at least in part, is:
+The _all swans are white_ null example is useful as a reference point to compare with other important scientific hypotheses we are truly after. In this case, with such a "big" statement (applying to ALL swans) you just need to see one black one and it's over and done with. But the problem, at least in part, is:
 
 a. Not all scientific inquiries are this simple, objective, and clear
 b. Not all _measurements_ about the thing are clear either.
@@ -95,7 +95,7 @@ In discussing more opaque hypotheses,
 
 Both of these hint at Bayesian thinking.
 
-The last paragraph on in section 1.2 is very important:
+The last paragraph in section 1.2 is very important:
 
 > "But falsification is always consensual, not logical. In light of real problems of measurement error and the continuous nature of natural phenomena, scientific communities argue towards consensus about the meaning of evidence." (9)
 
@@ -133,7 +133,7 @@ He further solidifies his stance that he's not using Bayesian modeling on ideolo
 
 > "Note that the preceding description doesn't invoke anyone's 'beliefs' or subjective opinions. Bayesian data analysis is just a logical procedure for processing information. There is a tradition of using this procedure as a normative description of rational belief, a tradition called Bayesianism. But this book neither describes nor advocates it. In fact, I'll argue that no statistical approach, Bayesian or otherwise, is by itself sufficient." (12)
 
-He then goes on to describe the advantage of Bayesian analysis--it is more intuitive. People can grasp the practical implications easier, and it just makes sense. Otherwise you are just trying to remember some steps or criteria or what boilerplate sentence to write about a p-value, without actually thinking through what it means. The interesting case he makes it how often a p-value (or confidence interval) is interpreted like a _posterior probability_ ([go back up the page](chapter1inching), this is related to the _fallacy of the transposed conditional_ as well), but the reverse is not done.
+He then goes on to describe the advantage of Bayesian analysis--it is more intuitive. People can grasp the practical implications easier, and it just makes sense. Otherwise you are just trying to remember some steps or criteria or what boilerplate sentence to write about a p-value, without actually thinking through what it means. The interesting case he makes it how often a p-value (or confidence interval) is interpreted like a _posterior probability_ ([go back up the page](#chapter1inching), this is related to the _fallacy of the transposed conditional_ as well), but the reverse is not done.
 
 > "The opposite pattern of mistake--interpreting a posterior probability as a p-value--seems to happen only rarely. None of this ensures Bayesian analysis will be more correct...the scientist's intuition will less commonly be at odds with actual logic of the framework." (12)
 
@@ -151,7 +151,7 @@ The emphasis being that our _model_ can learn from data. Meaning our _model_ is 
 
 ### Beyond accuracy
 
-He talks about the concept of overfitting, and the need for cross-validation, etc. But one attribute of Bayesian thinking that is related to this is the fact that multiple models can produce the same predictions, and so choosing the simpler one is in large part what Bayesian thinking does. So beyond getting good predictions, we're chosen the model/mechanism that more likely generated the data. There is a [fascinating paper](https://nyaspubs.onlinelibrary.wiley.com/doi/10.1111/nyas.15086) related to this topic that discusses how Bayesian modeling is essentially the realization of [Occam's Razor](https://en.wikipedia.org/wiki/Occam%27s_razor)--definitely worth the read.
+He talks about the concept of overfitting, and the need for cross-validation, etc. But one attribute of Bayesian thinking that is related to this is the fact that multiple models can produce the same predictions, and so choosing the simpler one is in large part what Bayesian thinking does. So beyond getting good predictions, we're chosing the model/mechanism that more likely generated the data. There is a [fascinating paper](https://nyaspubs.onlinelibrary.wiley.com/doi/10.1111/nyas.15086) related to this topic that discusses how Bayesian modeling is essentially the realization of [Occam's Razor](https://en.wikipedia.org/wiki/Occam%27s_razor)--definitely worth the read.
 
 ### A multilevel approach
 
@@ -159,7 +159,7 @@ He implicitly describes _multilevel models_ as a key concept in this book. Yes, 
 
 > "Cross-validation and information criteria measure overfitting risk and help us to recognize it. Multilevel models actually do something about it." (14)
 
-_Partial pooling_ is what allows us to structure models and share information very it is necessary, while preserving variation and other important components of the data-generating process. In this sense, he extends this concept more generally to how we can think about multilevel modeling, in the context of missing data, factor analysis, etc. The concept that _"each parameter can be thought of as a placeholder for a missing model"_ makes you realize the hierarchical structure of every modeling process.
+_Partial pooling_ is what allows us to structure models and share information where it is necessary, while preserving variation and other important components of the data-generating process. In this sense, he extends this concept more generally to how we can think about multilevel modeling, in the context of missing data, factor analysis, etc. The concept that _"each parameter can be thought of as a placeholder for a missing model"_ makes you realize the hierarchical structure of every modeling process.
 
 He then makes a big claim: _"multilevel regression deserves to be the default form of regression"_. Stating that papers should have to justify _not_ doing this, rather than the current practice. Intuitively, I think this makes sense. Part of the reason you can easily critique this in academic papers is because there are a lot of things worth critiquing, stemming from things like the cult of statistical significance, poor publication standards, reliance on "positive" p-values, and overall lack of accountability for anything that happens with the results beyond them being printed on a page, leaving open an infinite number of ways to "do" a study and get it published...but I digress.
 
@@ -173,7 +173,7 @@ Exactly. It's harder. And there's no incentive to do it, because they'll still g
 
 He makes a similar point here described above, that models can have similar predictions but not be the true causal mechanism. This has to do with overfitting (think the geocentric vs. heliocentric models), and inferring what makes sense logically regardless of the outputs of the model.
 
-The concept of _identification_ is very important here, because it distinguishes the simple act of predicting what will happen (i.e., I can _predict_ that the wind is blowing given I see tree branches swaying) versus _intervening_ on a process and inferring what will happen as a result (I can't then go and move the branches around to make wind start blowing (besides the force generated from the branches which is different))
+The concept of _identification_ is very important here, because it distinguishes the simple act of predicting what will happen (i.e., I can _predict_ that the wind is blowing given I see tree branches swaying) versus _intervening_ on a process and inferring what will happen as a result (I can't then go and move the branches around to make wind start blowing (besides the force generated from the branches which is different)).
 
 ### The diagram
 

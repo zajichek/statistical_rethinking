@@ -10,7 +10,7 @@ The "garden of forking paths" idea is about stretching out the process for count
 
 ### First, the likelihood
 
-In the marble example, he starts by counting the number of ways a particular observed sequence of marble draws could have occurred _given_ a assumed true state of the bag (i.e., a hypothesis, which he calls _conjecture_). Then proceeds to manually count (and draw) the possibilities--nothing fancy about it, just brute force. Once this count is obtained, the question becomes: _what is this collection of counts for all other possible states of the bag?_. This is getting at what Bayesian analysis fundamentally is: determining which state of the world is most likely given the evidence.
+In the marble example, he starts by counting the number of ways a particular observed sequence of marble draws could have occurred _given_ an assumed true state of the bag (i.e., a hypothesis, which he calls _conjecture_). Then proceeds to manually count (and draw) the possibilities--nothing fancy about it, just brute force. Once this count is obtained, the question becomes: _what is this collection of counts for all other possible states of the bag?_. This is getting at what Bayesian analysis fundamentally is: determining which state of the world is most likely given the evidence.
 
 > "By comparing these counts, we have part of a solution for a way to rate the relative plausibility of each conjectured bag composition." (23)
 
@@ -18,7 +18,7 @@ The word _relative_ foreshadows many implications in Bayesian analysis, such as 
 
 #### Translating to familar notation
 
-Since I come at this from the "traditional" statistical point of view, it's helpful to reconcile the approach here with the way I would typically think about it. Namely, we have a bag with four (4) marbles in it, each one being white or blue. Based on a sample from the bag, we want to infer what make up of all marbles is. Thus, the unknown parameter can be thought of as $p$, the proportion of marbles that are blue (or white if we wanted). So, $p$ can be one of five choices: $p \in (0, .25, .5, .75, 1)$. On page 21 it was stated that _"a sequence of three marbles is pulled from the bag, one at a time, replacing the marble each time and shaking the bag before drawing another marble"_--so we are _assuming_ that we are selecting randomly with replacement (as a side note, a key point is our assumption: we are using our judgement that the sampling method (shaking randomly) is sufficient to assume random, independent draws, but this paradigm leaves the possibility to account for modeling steps where this assumption may not be valid).
+Since I come at this from the "traditional" statistical point of view, it's helpful to reconcile the approach here with the way I would typically think about it. Namely, we have a bag with four (4) marbles in it, each one being white or blue. Based on a sample from the bag, we want to infer what make up of all marbles is. Thus, the unknown parameter can be thought of as $p$, the proportion of marbles that are blue (or white if we wanted). So, $p$ can be one of five choices: $p \in (0, .25, .5, .75, 1)$. On page 21 it was stated that _"a sequence of three marbles is pulled from the bag, one at a time, replacing the marble each time and shaking the bag before drawing another marble"_--so we are _assuming_ that we are selecting randomly with replacement (as a side note, a key point is our assumption: *we are using our judgement that the sampling method (shaking randomly) is sufficient to assume random, independent draws, but this paradigm leaves the possibility to account for modeling steps where this assumption may not be valid).*
 
 If we take $N=3$ draws and $X=2$ is the number that were blue, then we can think of:
 
@@ -73,7 +73,83 @@ This gets at the idea of a _prior_ distribution. We may know something about how
 
 ### Incorporating prior knowledge
 
+Since we've just established the number of ways to observe the original sequence of draws (blue, white, blue), we now consider that as our _current_ model (or information) we know about the process. So if we took another draw, we can consider our current information as the _prior_ knowledge, and combine that with the number of ways we could observe the next blue marble:
 
+_Original_
+```{r}
+
+cbind(p, ways, posterior_probability = ways / sum(ways))
+
+```
+
+_New_
+```{r}
+# New marble drawn blue
+X_new <- 1
+
+# Number of trials
+N_new <- length(X_new)
+
+# How many ways could this happen for each p?
+ways_new <- (marbles * p)^X_new * (marbles * (1-p))^(N_new-X_new)
+
+# Number of ways to observe the new sequence, given our prior information
+prior <- ways
+posterior_ways <- ways_new * prior
+
+cbind(p, ways_new, prior, posterior_ways, posterior_probability = posterior_ways / sum(posterior_ways))
+```
+
+Now this is sort of trivial, because this is the _same_ as if we just thought of counting the full sequence of 4 draws:
+
+```{r}
+# Possible values of p
+p <- c(0, .25, .5, .75, 1)
+marbles <- length(p) - 1
+
+# Number of samples
+N <- 4
+
+# Observed sequence (1 = blue, 0 = white)
+X <- c(1, 0, 1, 1)
+X <- sum(X)
+
+# How many ways could this happen for each p?
+ways <- (marbles * p)^X * (marbles * (1-p))^(N-X)
+
+cbind(p, ways, posterior_probability = ways / sum(ways))
+```
+
+This gets at something that was always murky in Bayesian updating: wouldn't (or shouldn't) your _priors_ technically always reflect the most recent information, up to the very second? Meaning that if we set an initial prior, and then collected a single sample, and updated our model, shouldn't the posterior of that model now be our prior for any subsequent estimate? Well, yes, and it turns out (as we've shown about) that these are equivalent ways to think about the mathematical procedure, because you are just enumerating the ways that your sequence of observations could have been observed. So the important piece is just capturing what you know about the parameters at the beginning, and also reflecting any additional information that comes about in the proceeding utilization of information.
+
+I could just wait until _all_ my data is collected over some period of time, combine that with original priors, and get some estimate, or I could sequentially run my estimation procedure each time as a new observation comes in, with everything prior to that being reflected in a prior--it is the same thing. *The key is our assumption about how that intermediate information is being generated sequentially--if we learn additional information after say, the 10th sample, that was never known before, we can then incorporate that into our estimation at that point in time*.
+
+> "This updating approach amounts to nothing more than asserting that (1) when we have previous information suggesting there are _W_ ways for a conjecture to produce a previous observation _D_ and (2) we acquire new observations _D*_ that the same conjecture can produce in _W*_ ways, then (3) the number of ways the conjecture can account for both _D_ as well as _D*_ is just the produce _W_ X _W*_...Multiplication is just a shortcut to enumerating and counting up all of the paths through the garden that counld produce all the observations." (25)
+
+The example he gives to demonstrate the point on "additional information in between draws" is if suddenly you knew something about how the bags of marbles are produced (which is new data in a different form), which implies that there will be no bags containing all white or all blue marbles, three times as many containing only one blue marble and two times as many containing two blue marbles, both vs. one white marble, then we can now updating our _current_ knowledge from the draws we've already done with this new information:
+
+```{r}
+# What we know NOW
+prior <- posterior_ways
+
+# Relative counts of the conjectures
+counts <- c(0, 3, 2, 1, 0)
+
+# New ways
+ways_new <- prior * counts
+
+cbind(p, prior, counts, ways_new, posterior_probability = ways_new / sum(ways_new))
+```
+
+Notice that _if_ we had known about the bag proportions before we did any draws, that would have been the more intuitive prior distribution to start with, yet we would have reached the _same_ answer. We're just enumerating possibilities based on the information we receive.
+
+In this vain, he rarely recommends that we would use a "principle of indifference" (i.e., act like we know _nothing_ about the parameters beforehand, and treat them all as equally likely):
+
+> "This book does not use nor endorse "ignorance" priors. As we'll see in later chapters, the structure of the model and the scientific context always provide information that allows us to do better than ignorance." (26)
+
+This is obviously true. There is no circumstance where we should claim we know _absolutely nothing_ about. Even if it is just a little, include it in the model.
+
+## Building a model
 
 <br>
 
