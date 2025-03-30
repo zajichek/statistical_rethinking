@@ -220,7 +220,12 @@ window.Quarto = {
   <li><a href="#first-the-likelihood" id="toc-first-the-likelihood" class="nav-link" data-scroll-target="#first-the-likelihood"><span class="header-section-number">2.1.1</span> First, the likelihood</a></li>
   <li><a href="#incorporating-prior-knowledge" id="toc-incorporating-prior-knowledge" class="nav-link" data-scroll-target="#incorporating-prior-knowledge"><span class="header-section-number">2.1.2</span> Incorporating prior knowledge</a></li>
   </ul></li>
-  <li><a href="#building-a-model" id="toc-building-a-model" class="nav-link" data-scroll-target="#building-a-model"><span class="header-section-number">2.2</span> Building a model</a></li>
+  <li><a href="#building-a-model" id="toc-building-a-model" class="nav-link" data-scroll-target="#building-a-model"><span class="header-section-number">2.2</span> Building a model</a>
+  <ul class="collapse">
+  <li><a href="#updating-priors" id="toc-updating-priors" class="nav-link" data-scroll-target="#updating-priors"><span class="header-section-number">2.2.1</span> Updating priors</a></li>
+  <li><a href="#bayesian-models-need-no-data" id="toc-bayesian-models-need-no-data" class="nav-link" data-scroll-target="#bayesian-models-need-no-data"><span class="header-section-number">2.2.2</span> Bayesian models need no data</a></li>
+  <li><a href="#tie-inferences-back-to-what-matters" id="toc-tie-inferences-back-to-what-matters" class="nav-link" data-scroll-target="#tie-inferences-back-to-what-matters"><span class="header-section-number">2.2.3</span> Tie inferences back to what matters</a></li>
+  </ul></li>
   </ul>
 </nav>
     </div>
@@ -451,6 +456,162 @@ window.Quarto = {
 </section>
 <section id="building-a-model" class="level2" data-number="2.2">
 <h2 data-number="2.2" class="anchored" data-anchor-id="building-a-model"><span class="header-section-number">2.2</span> Building a model</h2>
+<p>He characterizes the model building process into three steps, which supports our previous profundity about Bayesian thinking: switching from thinking about the <em>data</em> to the <em>model</em>, and only use data as a fleeting piece of information to fine tune that model. The three steps are:</p>
+<ul>
+<li>Data story: Thinking about the <em>data-generating process</em> (no data included)</li>
+<li>Update: Use your data to now revise, or as he says, “educate” your model based on evidence</li>
+<li>Evaluate: That is your model as of <em>now</em>, but up to this point in time, we may need to change it</li>
+</ul>
+<blockquote class="blockquote">
+<p>“But all data stories are complete, in the sense that they are sufficient for specifying an algorithm for simulating new data.” (28)</p>
+</blockquote>
+<p>This is profound. Because once we specify the data-generating process, we <em>think</em> we now know (to the best of our knowledge), how an subsequent data would be generated. Thus, we don’t actually need real data to begin evaluating the truth to our model. We can start simulating it and see how it plays out. If stuff starts to look how it does it real life, we may be on the right track, and then could move forward with getting real data to inform our estimates.</p>
+<blockquote class="blockquote">
+<p>“When you are forced to consider sampling and measurement and make a precise statement of how temperature predicts ran, many stories and resulting models will be consistent with the same vague hypothesis. Resolving that ambiguity often leads to important realizations and model revisions, before any model is fit to data.” (29)</p>
+</blockquote>
+<p>This is exactly my point I made in <a href="chapter1.html#sec-flaws-in-falsifiability" class="quarto-xref"><span>Section 1.2.1</span></a>. There are infinite ways to procedurally carry out a study answering the same question (i.e., how you define things, how data is collected (exactly), every detailed assumption made along the way, etc.). All of these nuances can have drastic effects on the ultimate conclusions made.</p>
+<section id="updating-priors" class="level3" data-number="2.2.1">
+<h3 data-number="2.2.1" class="anchored" data-anchor-id="updating-priors"><span class="header-section-number">2.2.1</span> Updating priors</h3>
+<p>He goes through the concept of what Bayesian updating is to get a feel for it. We can recreate Figure 2.5 (page 30) to better intuit what is happening behind the scenes.</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a><span class="co"># The observed sample sequence</span></span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>observed_sample <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">0</span>, <span class="dv">1</span>) <span class="co"># 1 = water; 0 = land</span></span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>N <span class="ot">&lt;-</span> <span class="fu">length</span>(observed_sample)</span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Approximate the set of inifinite p-values by a large set of discrete ones</span></span>
+<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a>p_continuous <span class="ot">&lt;-</span> <span class="fu">seq</span>(<span class="dv">0</span>, <span class="dv">1</span>, .<span class="dv">01</span>)</span>
+<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-10"><a href="#cb15-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Set the prior probability (uniform over the possibly choices)</span></span>
+<span id="cb15-11"><a href="#cb15-11" aria-hidden="true" tabindex="-1"></a>prior <span class="ot">&lt;-</span> <span class="fu">rep</span>(<span class="dv">1</span> <span class="sc">/</span> <span class="fu">length</span>(p_continuous), <span class="fu">length</span>(p_continuous))</span>
+<span id="cb15-12"><a href="#cb15-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-13"><a href="#cb15-13" aria-hidden="true" tabindex="-1"></a><span class="co"># Set the current posterior as the prior (before any data collected)</span></span>
+<span id="cb15-14"><a href="#cb15-14" aria-hidden="true" tabindex="-1"></a>last_posterior <span class="ot">&lt;-</span> prior</span>
+<span id="cb15-15"><a href="#cb15-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-16"><a href="#cb15-16" aria-hidden="true" tabindex="-1"></a><span class="co"># Make result set</span></span>
+<span id="cb15-17"><a href="#cb15-17" aria-hidden="true" tabindex="-1"></a>results <span class="ot">&lt;-</span> <span class="fu">tibble</span>()</span>
+<span id="cb15-18"><a href="#cb15-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-19"><a href="#cb15-19" aria-hidden="true" tabindex="-1"></a><span class="co"># For each value in the observed sample </span></span>
+<span id="cb15-20"><a href="#cb15-20" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span>(i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>N) {</span>
+<span id="cb15-21"><a href="#cb15-21" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb15-22"><a href="#cb15-22" aria-hidden="true" tabindex="-1"></a>  <span class="co"># 1. Get the sub-sample</span></span>
+<span id="cb15-23"><a href="#cb15-23" aria-hidden="true" tabindex="-1"></a>  sub_sample <span class="ot">&lt;-</span> observed_sample[<span class="dv">1</span><span class="sc">:</span>i]</span>
+<span id="cb15-24"><a href="#cb15-24" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb15-25"><a href="#cb15-25" aria-hidden="true" tabindex="-1"></a>  <span class="co"># 2. Compute metrics (the number of water samples, and the total number of spins)</span></span>
+<span id="cb15-26"><a href="#cb15-26" aria-hidden="true" tabindex="-1"></a>  W_temp <span class="ot">&lt;-</span> <span class="fu">sum</span>(sub_sample)</span>
+<span id="cb15-27"><a href="#cb15-27" aria-hidden="true" tabindex="-1"></a>  N_temp <span class="ot">&lt;-</span> <span class="fu">length</span>(sub_sample)</span>
+<span id="cb15-28"><a href="#cb15-28" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb15-29"><a href="#cb15-29" aria-hidden="true" tabindex="-1"></a>  <span class="co"># 3. Compute the likelihood for each p</span></span>
+<span id="cb15-30"><a href="#cb15-30" aria-hidden="true" tabindex="-1"></a>  temp_likelihood <span class="ot">&lt;-</span> p_continuous<span class="sc">^</span>W_temp <span class="sc">*</span> (<span class="dv">1</span> <span class="sc">-</span> p_continuous)<span class="sc">^</span>(N_temp <span class="sc">-</span> W_temp)</span>
+<span id="cb15-31"><a href="#cb15-31" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb15-32"><a href="#cb15-32" aria-hidden="true" tabindex="-1"></a>  <span class="co"># 4. Posterior</span></span>
+<span id="cb15-33"><a href="#cb15-33" aria-hidden="true" tabindex="-1"></a>  temp_posterior <span class="ot">&lt;-</span> temp_likelihood <span class="sc">/</span> <span class="fu">sum</span>(temp_likelihood)</span>
+<span id="cb15-34"><a href="#cb15-34" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb15-35"><a href="#cb15-35" aria-hidden="true" tabindex="-1"></a>  <span class="co"># 5. Add to results</span></span>
+<span id="cb15-36"><a href="#cb15-36" aria-hidden="true" tabindex="-1"></a>  results <span class="ot">&lt;-</span></span>
+<span id="cb15-37"><a href="#cb15-37" aria-hidden="true" tabindex="-1"></a>    results <span class="sc">|&gt;</span></span>
+<span id="cb15-38"><a href="#cb15-38" aria-hidden="true" tabindex="-1"></a>    <span class="fu">bind_rows</span>(</span>
+<span id="cb15-39"><a href="#cb15-39" aria-hidden="true" tabindex="-1"></a>      <span class="fu">tibble</span>(</span>
+<span id="cb15-40"><a href="#cb15-40" aria-hidden="true" tabindex="-1"></a>        <span class="at">sample =</span> i,</span>
+<span id="cb15-41"><a href="#cb15-41" aria-hidden="true" tabindex="-1"></a>        <span class="at">sequence =</span> <span class="fu">paste</span>(sub_sample, <span class="at">collapse =</span> <span class="st">","</span>),</span>
+<span id="cb15-42"><a href="#cb15-42" aria-hidden="true" tabindex="-1"></a>        p_continuous,</span>
+<span id="cb15-43"><a href="#cb15-43" aria-hidden="true" tabindex="-1"></a>        <span class="at">likelihood =</span> temp_likelihood,</span>
+<span id="cb15-44"><a href="#cb15-44" aria-hidden="true" tabindex="-1"></a>        <span class="at">current =</span> temp_posterior,</span>
+<span id="cb15-45"><a href="#cb15-45" aria-hidden="true" tabindex="-1"></a>        <span class="at">last =</span> last_posterior</span>
+<span id="cb15-46"><a href="#cb15-46" aria-hidden="true" tabindex="-1"></a>      )</span>
+<span id="cb15-47"><a href="#cb15-47" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb15-48"><a href="#cb15-48" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb15-49"><a href="#cb15-49" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Set the new last posterior</span></span>
+<span id="cb15-50"><a href="#cb15-50" aria-hidden="true" tabindex="-1"></a>  last_posterior <span class="ot">&lt;-</span> temp_posterior</span>
+<span id="cb15-51"><a href="#cb15-51" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb15-52"><a href="#cb15-52" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb15-53"><a href="#cb15-53" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-54"><a href="#cb15-54" aria-hidden="true" tabindex="-1"></a>results <span class="sc">|&gt;</span></span>
+<span id="cb15-55"><a href="#cb15-55" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb15-56"><a href="#cb15-56" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Send down the rows</span></span>
+<span id="cb15-57"><a href="#cb15-57" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pivot_longer</span>(</span>
+<span id="cb15-58"><a href="#cb15-58" aria-hidden="true" tabindex="-1"></a>    <span class="at">cols =</span> <span class="fu">c</span>(last, current)</span>
+<span id="cb15-59"><a href="#cb15-59" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
+<span id="cb15-60"><a href="#cb15-60" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb15-61"><a href="#cb15-61" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Make a plot</span></span>
+<span id="cb15-62"><a href="#cb15-62" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>() <span class="sc">+</span></span>
+<span id="cb15-63"><a href="#cb15-63" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_area</span>(</span>
+<span id="cb15-64"><a href="#cb15-64" aria-hidden="true" tabindex="-1"></a>    <span class="fu">aes</span>(</span>
+<span id="cb15-65"><a href="#cb15-65" aria-hidden="true" tabindex="-1"></a>      <span class="at">x =</span> p_continuous,</span>
+<span id="cb15-66"><a href="#cb15-66" aria-hidden="true" tabindex="-1"></a>      <span class="at">y =</span> value,</span>
+<span id="cb15-67"><a href="#cb15-67" aria-hidden="true" tabindex="-1"></a>      <span class="at">fill =</span> name</span>
+<span id="cb15-68"><a href="#cb15-68" aria-hidden="true" tabindex="-1"></a>    ),</span>
+<span id="cb15-69"><a href="#cb15-69" aria-hidden="true" tabindex="-1"></a>    <span class="at">color =</span> <span class="st">"black"</span>,</span>
+<span id="cb15-70"><a href="#cb15-70" aria-hidden="true" tabindex="-1"></a>    <span class="at">alpha =</span> .<span class="dv">65</span>,</span>
+<span id="cb15-71"><a href="#cb15-71" aria-hidden="true" tabindex="-1"></a>    <span class="at">position =</span> <span class="st">"identity"</span></span>
+<span id="cb15-72"><a href="#cb15-72" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb15-73"><a href="#cb15-73" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_wrap</span>(</span>
+<span id="cb15-74"><a href="#cb15-74" aria-hidden="true" tabindex="-1"></a>    <span class="sc">~</span><span class="fu">paste0</span>(<span class="st">"Spin: "</span>, <span class="fu">factor</span>(sample), <span class="st">" </span><span class="sc">\n</span><span class="st">Sample: "</span>, sequence)</span>
+<span id="cb15-75"><a href="#cb15-75" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb15-76"><a href="#cb15-76" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(</span>
+<span id="cb15-77"><a href="#cb15-77" aria-hidden="true" tabindex="-1"></a>    <span class="at">legend.position =</span> <span class="st">"top"</span>,</span>
+<span id="cb15-78"><a href="#cb15-78" aria-hidden="true" tabindex="-1"></a>    <span class="at">panel.background =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb15-79"><a href="#cb15-79" aria-hidden="true" tabindex="-1"></a>    <span class="at">panel.grid.major.y =</span> <span class="fu">element_line</span>(<span class="at">colour =</span> <span class="st">"gray"</span>),</span>
+<span id="cb15-80"><a href="#cb15-80" aria-hidden="true" tabindex="-1"></a>    <span class="at">axis.ticks.y =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb15-81"><a href="#cb15-81" aria-hidden="true" tabindex="-1"></a>    <span class="at">axis.text.y =</span> <span class="fu">element_blank</span>()</span>
+<span id="cb15-82"><a href="#cb15-82" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb15-83"><a href="#cb15-83" aria-hidden="true" tabindex="-1"></a>  <span class="fu">xlab</span>(<span class="st">"p"</span>) <span class="sc">+</span></span>
+<span id="cb15-84"><a href="#cb15-84" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ylab</span>(<span class="st">"Posterior Probability"</span>) <span class="sc">+</span></span>
+<span id="cb15-85"><a href="#cb15-85" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb15-86"><a href="#cb15-86" aria-hidden="true" tabindex="-1"></a>    <span class="at">fill =</span> <span class="st">"Posterior"</span></span>
+<span id="cb15-87"><a href="#cb15-87" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb15-88"><a href="#cb15-88" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_manual</span>(</span>
+<span id="cb15-89"><a href="#cb15-89" aria-hidden="true" tabindex="-1"></a>    <span class="at">values =</span> <span class="fu">c</span>(<span class="st">"blue"</span>, <span class="st">"darkgray"</span>)</span>
+<span id="cb15-90"><a href="#cb15-90" aria-hidden="true" tabindex="-1"></a>  ) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="chapter2_files/figure-html/unnamed-chunk-8-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p><em>Note that this is actually just a discrete approximation of the true continuous, analytical solution, but it covers the idea of what is going on. I previously went in depth on this specific problem from the book <a href="https://www.zajichekstats.com/post/statistical-rethinking-2023-class-notes/#lecture2">here</a> which provides much more detail and code.</em></p>
+<blockquote class="blockquote">
+<p>“Notice that every updated set of plausibilities becomes the initial plausibilities for the next observation. Every conclusion is the starting point for future inference.” (31)</p>
+</blockquote>
+<p>This supports the idea that our <em>model</em> is the living, breathing thing, and that we should use everything we know up to <em>now</em> to inform it. Then use new information to subsequently update it as time goes on. <em>Our model is never complete</em>.</p>
+<p>Another crucial point about considering sequential updates versus using your entire data set in a single updating step:</p>
+<blockquote class="blockquote">
+<p>“So the data could be presented to your model in any order, or all at once even. In most cases, you will present the data all at once, for the sake of convenience. But it’s important to realize that this merely represents abbreviation of an iterated learning process.” (31)</p>
+</blockquote>
+<p>There is a catch though, as reflected later:</p>
+<blockquote class="blockquote">
+<p>“That is only true, however, because the model assumes that order is irrelevant to inference. When something is irrelevant to the machine, it won’t affect the inference directly. But it may affect it indirectly, because the data will depend upon order.” (31)</p>
+</blockquote>
+<p>Hence the importance of <em>understanding</em> the data-generating process.</p>
+</section>
+<section id="bayesian-models-need-no-data" class="level3" data-number="2.2.2">
+<h3 data-number="2.2.2" class="anchored" data-anchor-id="bayesian-models-need-no-data"><span class="header-section-number">2.2.2</span> Bayesian models need no data</h3>
+<p>In the <em>Rethinking</em> box on page 31, he discusses a crucial point related to what we’ve talked about: that there is no sample size requirement for Bayesian inference. This again is a <em>key</em> reason why this paradigm is superior. We aren’t stuck in asymptotics and arbitrary sample size cutoffs (e.g., N=30). We can specify our model, with prior information, using the best available knowledge we have up to this point in time, and actually get reliable estimates. Then as we collect a single observation, our new (posterior) estimates will nicely update to reflect the (likely little) amount of information contained in it, instead of needing to gather a bunch of data in order to get even get something interpretable. I previously discussed this in depth with an example here:</p>
+<div class="quarto-video ratio ratio-16x9"><iframe data-external="1" src="https://www.youtube.com/embed/bUerkVsCwtA" title="" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen=""></iframe></div>
+</section>
+<section id="tie-inferences-back-to-what-matters" class="level3" data-number="2.2.3">
+<h3 data-number="2.2.3" class="anchored" data-anchor-id="tie-inferences-back-to-what-matters"><span class="header-section-number">2.2.3</span> Tie inferences back to what matters</h3>
+<p>It’s not enough to just provide an estimate and say “it matters” or not, like we arbitrarily do with frequentist p-values and 5% thresholds. These are empty statements. And again, for a result to be meaningful, we need to <em>feel it in our bones</em>. If all results were presented with such relevance, there wouldn’t be so much controversy about the value of “science”. This problem in large part in our society is due to the lacksidasical approach to assigning meaning to estimates, declaring scientific certainty, and not actually doing to the due diligence of acknowledging nuances to why some things matter to some people and some don’t.</p>
+<p>This point is hit on in the <em>Evaluate</em> section (2.2.3) of the book:</p>
+<blockquote class="blockquote">
+<p>“Instead, the objective is to check the model’s adequacy for some purpose. This usually means asking and answering additional questions, beyond those that originally constructed the model. Both the questions and answers will depend upon the scientific context.” (32)</p>
+</blockquote>
+<p>When we just blindly run statistical tests, get a p-value less than 5%, and then declare that “science shows this thing, and anyone who disregards it is anti-science”, we’ve entered into something that is more religious, not scientific. Because we haven’t actually convinced the person that these results matter. It is our job to frame scientific questions, their scope, and the subsequent results/interpretation closer something tangible that makes people <em>feel</em> the results.</p>
+<p>As the great book <a href="https://press.umich.edu/Books/T/The-Cult-of-Statistical-Significance2">The Cult of Statistical Significance: How the Standard Error Costs Us Jobs, Justice, and Lives</a> says:</p>
+<blockquote class="blockquote">
+<p>“Real science changes one’s mind. That’s one way to see that the proliferation of unpersuasive significance tests is not real science.” (page 112)</p>
+</blockquote>
+<p>and</p>
+<blockquote class="blockquote">
+<p>“She can test her belief in the price effect by looking at the magnitudes, using, for example, the highly advanced technique common in data-heavy articles in physics journals: ‘interocular trauma’. That is, she can look and see if the result hits her between the eyes.” (page 72)</p>
+</blockquote>
+<p>See a much more extensive discussion of this book, and a large list of quotes from that book that I love, <a href="https://www.zajichekstats.com/post/statistical-significance-is-insignificant/">here</a>.</p>
 <p><br></p>
 <p><em>Video Lecture From the Author</em></p>
 <div class="quarto-video ratio ratio-16x9"><iframe data-external="1" src="https://www.youtube.com/embed/R1vcdhPBlXA" title="" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen=""></iframe></div>
@@ -458,6 +619,7 @@ window.Quarto = {
 
 <!-- -->
 
+</section>
 </section>
 
 </main> <!-- /main -->
@@ -944,163 +1106,316 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
       </a>
   </div>
 </nav><div class="modal fade" id="quarto-embedded-source-code-modal" tabindex="-1" aria-labelledby="quarto-embedded-source-code-modal-label" aria-hidden="true"><div class="modal-dialog modal-dialog-scrollable"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" id="quarto-embedded-source-code-modal-label">Source Code</h5><button class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><div class="">
-<div class="sourceCode" id="cb15" data-shortcodes="false"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="fu"># Small Worlds and Large Worlds</span></span>
-<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a><span class="at">&gt; "Colombo </span><span class="co">[</span><span class="ot">Christopher Columbus</span><span class="co">]</span><span class="at"> made a prediction based upon his view that the world was small. But since he lived in a large world, aspects of the prediction were wrong. In his case, the error was lucky." (19)</span></span>
-<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>All models are and will always be wrong, that's why they are called models. The "small world" represented by the model can only hope to be reflective of "large world", the actual environment in which the model, insights, and inference that come out of it are used (i.e., where the rubber meets the road).</span>
-<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a><span class="fu">## Unraveling the counting process</span></span>
-<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a>The "garden of forking paths" idea is about stretching out the process for counting things. Often in statistics, we just use formulas, or integrals, or whatever other notation to think through logic in our heads. This fundamental, systematic approach to counting lets us see what's really going on behind the scenes. Ultimately, this leads to a more intuitive understanding of what Bayesian modeling is (in McElreath's words): _"really just counting and comparing of possibilities"_ (20).</span>
-<span id="cb15-10"><a href="#cb15-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-11"><a href="#cb15-11" aria-hidden="true" tabindex="-1"></a><span class="fu">### First, the likelihood</span></span>
-<span id="cb15-12"><a href="#cb15-12" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-13"><a href="#cb15-13" aria-hidden="true" tabindex="-1"></a>In the marble example, he starts by counting the number of ways a particular observed sequence of marble draws could have occurred _given_ an assumed true state of the bag (i.e., a hypothesis, which he calls _conjecture_). Then proceeds to manually count (and draw) the possibilities--nothing fancy about it, just brute force. Once this count is obtained, the question becomes: _what is this collection of counts for all other possible states of the bag?_. This is getting at what Bayesian analysis fundamentally is: determining which state of the world is most likely given the evidence.</span>
-<span id="cb15-14"><a href="#cb15-14" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-15"><a href="#cb15-15" aria-hidden="true" tabindex="-1"></a><span class="at">&gt; "By comparing these counts, we have part of a solution for a way to rate the relative plausibility of each conjectured bag composition." (23)</span></span>
-<span id="cb15-16"><a href="#cb15-16" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-17"><a href="#cb15-17" aria-hidden="true" tabindex="-1"></a>The word _relative_ foreshadows many implications in Bayesian analysis, such as the focus on priors and likelihoods (not the normalizing constant), the different approaches to getting at the same answer (counts, rates, etc.), and the focus of comparing possible hypotheses relative to one another (and the whole slate of possibilities).</span>
-<span id="cb15-18"><a href="#cb15-18" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-19"><a href="#cb15-19" aria-hidden="true" tabindex="-1"></a><span class="fu">#### Translating to familar notation</span></span>
-<span id="cb15-20"><a href="#cb15-20" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-21"><a href="#cb15-21" aria-hidden="true" tabindex="-1"></a>Since I come at this from the "traditional" statistical point of view, it's helpful to reconcile the approach here with the way I would typically think about it. Namely, we have a bag with four (4) marbles in it, each one being white or blue. Based on a sample from the bag, we want to infer what make up of all marbles is. Thus, the unknown parameter can be thought of as $p$, the proportion of marbles that are blue (or white if we wanted). So, $p$ can be one of five choices: $p \in (0, .25, .5, .75, 1)$. On page 21 it was stated that _"a sequence of three marbles is pulled from the bag, one at a time, replacing the marble each time and shaking the bag before drawing another marble"_--so we are _assuming_ that we are selecting randomly with replacement (as a side note, a key point is our assumption: *we are using our judgement that the sampling method (shaking randomly) is sufficient to assume random, independent draws, but this paradigm leaves the possibility to account for modeling steps where this assumption may not be valid).*</span>
-<span id="cb15-22"><a href="#cb15-22" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-23"><a href="#cb15-23" aria-hidden="true" tabindex="-1"></a>If we take $N=3$ draws and $X=2$ is the number that were blue, then we can think of:</span>
-<span id="cb15-24"><a href="#cb15-24" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-25"><a href="#cb15-25" aria-hidden="true" tabindex="-1"></a>$X \sim Binomial(N=3, p)$</span>
-<span id="cb15-26"><a href="#cb15-26" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-27"><a href="#cb15-27" aria-hidden="true" tabindex="-1"></a>And we get the following counts of possible ways to observe this sequence for each value of $p$.</span>
-<span id="cb15-28"><a href="#cb15-28" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-31"><a href="#cb15-31" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb15-32"><a href="#cb15-32" aria-hidden="true" tabindex="-1"></a><span class="co"># Possible values of p</span></span>
-<span id="cb15-33"><a href="#cb15-33" aria-hidden="true" tabindex="-1"></a>p <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">0</span>, .<span class="dv">25</span>, .<span class="dv">5</span>, .<span class="dv">75</span>, <span class="dv">1</span>)</span>
-<span id="cb15-34"><a href="#cb15-34" aria-hidden="true" tabindex="-1"></a>marbles <span class="ot">&lt;-</span> <span class="fu">length</span>(p) <span class="sc">-</span> <span class="dv">1</span></span>
-<span id="cb15-35"><a href="#cb15-35" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-36"><a href="#cb15-36" aria-hidden="true" tabindex="-1"></a><span class="co"># Number of samples</span></span>
-<span id="cb15-37"><a href="#cb15-37" aria-hidden="true" tabindex="-1"></a>N <span class="ot">&lt;-</span> <span class="dv">3</span></span>
-<span id="cb15-38"><a href="#cb15-38" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-39"><a href="#cb15-39" aria-hidden="true" tabindex="-1"></a><span class="co"># Observed sequence (1 = blue, 0 = white)</span></span>
-<span id="cb15-40"><a href="#cb15-40" aria-hidden="true" tabindex="-1"></a>X <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">0</span>, <span class="dv">1</span>)</span>
-<span id="cb15-41"><a href="#cb15-41" aria-hidden="true" tabindex="-1"></a>X <span class="ot">&lt;-</span> <span class="fu">sum</span>(X)</span>
-<span id="cb15-42"><a href="#cb15-42" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-43"><a href="#cb15-43" aria-hidden="true" tabindex="-1"></a><span class="co"># How many ways could this happen for each p?</span></span>
-<span id="cb15-44"><a href="#cb15-44" aria-hidden="true" tabindex="-1"></a>ways <span class="ot">&lt;-</span> (marbles <span class="sc">*</span> p)<span class="sc">^</span>X <span class="sc">*</span> (marbles <span class="sc">*</span> (<span class="dv">1</span><span class="sc">-</span>p))<span class="sc">^</span>(N<span class="sc">-</span>X)</span>
-<span id="cb15-45"><a href="#cb15-45" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-46"><a href="#cb15-46" aria-hidden="true" tabindex="-1"></a><span class="fu">cbind</span>(p, ways, <span class="at">posterior_probability =</span> ways <span class="sc">/</span> <span class="fu">sum</span>(ways))</span>
-<span id="cb15-47"><a href="#cb15-47" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-48"><a href="#cb15-48" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb15-49"><a href="#cb15-49" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-50"><a href="#cb15-50" aria-hidden="true" tabindex="-1"></a>This matches what is in the book on page 23. Why? Well because there is a finite number of marbles, and we are re-scaling to be in absolute terms relative to that, instead of being in rate terms. The point is that we can think of the counting process in absolute magnitude (counts), relative (probabilities), or even likelihoods (basically, non-normalized probabilities). They will all produce the _same_ posterior probability suggesting that the bag most likely has 3 blue marbles, because our calculation is _relative_ to span of possible hypotheses (conjectures). </span>
-<span id="cb15-51"><a href="#cb15-51" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-52"><a href="#cb15-52" aria-hidden="true" tabindex="-1"></a>Here we use the full <span class="co">[</span><span class="ot">binomial</span><span class="co">](https://en.wikipedia.org/wiki/Binomial_distribution)</span> distribution for our calculations:</span>
-<span id="cb15-53"><a href="#cb15-53" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-56"><a href="#cb15-56" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb15-57"><a href="#cb15-57" aria-hidden="true" tabindex="-1"></a><span class="co"># Compute traditional binomial probabilities</span></span>
-<span id="cb15-58"><a href="#cb15-58" aria-hidden="true" tabindex="-1"></a>binom_probs <span class="ot">&lt;-</span> <span class="fu">dbinom</span>(<span class="at">x =</span> X, <span class="at">size =</span> N, <span class="at">prob =</span> p)</span>
-<span id="cb15-59"><a href="#cb15-59" aria-hidden="true" tabindex="-1"></a><span class="fu">cbind</span>(p, binom_probs, <span class="at">posterior_probability =</span> binom_probs <span class="sc">/</span> <span class="fu">sum</span>(binom_probs))</span>
-<span id="cb15-60"><a href="#cb15-60" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb15-61"><a href="#cb15-61" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-62"><a href="#cb15-62" aria-hidden="true" tabindex="-1"></a>Now we could even do it without it being normalized (i.e., we don't care if it adds to 1):</span>
-<span id="cb15-63"><a href="#cb15-63" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-66"><a href="#cb15-66" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb15-67"><a href="#cb15-67" aria-hidden="true" tabindex="-1"></a><span class="co"># Compute unnormalized probabilities</span></span>
-<span id="cb15-68"><a href="#cb15-68" aria-hidden="true" tabindex="-1"></a>unnorm_probs <span class="ot">&lt;-</span> p<span class="sc">^</span>X <span class="sc">*</span> (<span class="dv">1</span><span class="sc">-</span>p)<span class="sc">^</span>(N<span class="sc">-</span>X)</span>
-<span id="cb15-69"><a href="#cb15-69" aria-hidden="true" tabindex="-1"></a><span class="fu">cbind</span>(p, unnorm_probs, <span class="at">posterior_probability =</span> unnorm_probs <span class="sc">/</span> <span class="fu">sum</span>(unnorm_probs))</span>
-<span id="cb15-70"><a href="#cb15-70" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb15-71"><a href="#cb15-71" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-72"><a href="#cb15-72" aria-hidden="true" tabindex="-1"></a>They all lead to same _relative_ posterior probability (3 blue marbles).</span>
-<span id="cb15-73"><a href="#cb15-73" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-74"><a href="#cb15-74" aria-hidden="true" tabindex="-1"></a>One key caveat here that comes next: these results assume that each value of $p$ is equally likely. But as he points out:</span>
-<span id="cb15-75"><a href="#cb15-75" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-76"><a href="#cb15-76" aria-hidden="true" tabindex="-1"></a><span class="at">&gt; "We may have additional information about the relative plausibility of each conjecture. This information could arise from knowledge of how the contens of the bag were generated." (25)</span></span>
-<span id="cb15-77"><a href="#cb15-77" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-78"><a href="#cb15-78" aria-hidden="true" tabindex="-1"></a>This gets at the idea of a _prior_ distribution. We may know something about how the bag was arranged, such that we have an inkling that a particular value of $p$ is more likely to be true than the rest. In that case, what we have done above doesn't work.</span>
-<span id="cb15-79"><a href="#cb15-79" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-80"><a href="#cb15-80" aria-hidden="true" tabindex="-1"></a><span class="fu">### Incorporating prior knowledge</span></span>
-<span id="cb15-81"><a href="#cb15-81" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-82"><a href="#cb15-82" aria-hidden="true" tabindex="-1"></a>Since we've just established the number of ways to observe the original sequence of draws (blue, white, blue), we now consider that as our _current_ model (or information) we know about the process. So if we took another draw, we can consider our current information as the _prior_ knowledge, and combine that with the number of ways we could observe the next blue marble:</span>
-<span id="cb15-83"><a href="#cb15-83" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-84"><a href="#cb15-84" aria-hidden="true" tabindex="-1"></a>_Original_</span>
-<span id="cb15-87"><a href="#cb15-87" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb15-88"><a href="#cb15-88" aria-hidden="true" tabindex="-1"></a><span class="fu">cbind</span>(p, ways, <span class="at">posterior_probability =</span> ways <span class="sc">/</span> <span class="fu">sum</span>(ways))</span>
-<span id="cb15-89"><a href="#cb15-89" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-90"><a href="#cb15-90" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb15-91"><a href="#cb15-91" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-92"><a href="#cb15-92" aria-hidden="true" tabindex="-1"></a>_New_</span>
-<span id="cb15-95"><a href="#cb15-95" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb15-96"><a href="#cb15-96" aria-hidden="true" tabindex="-1"></a><span class="co"># New marble drawn blue</span></span>
-<span id="cb15-97"><a href="#cb15-97" aria-hidden="true" tabindex="-1"></a>X_new <span class="ot">&lt;-</span> <span class="dv">1</span></span>
-<span id="cb15-98"><a href="#cb15-98" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-99"><a href="#cb15-99" aria-hidden="true" tabindex="-1"></a><span class="co"># Number of trials</span></span>
-<span id="cb15-100"><a href="#cb15-100" aria-hidden="true" tabindex="-1"></a>N_new <span class="ot">&lt;-</span> <span class="fu">length</span>(X_new)</span>
-<span id="cb15-101"><a href="#cb15-101" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-102"><a href="#cb15-102" aria-hidden="true" tabindex="-1"></a><span class="co"># How many ways could this happen for each p?</span></span>
-<span id="cb15-103"><a href="#cb15-103" aria-hidden="true" tabindex="-1"></a>ways_new <span class="ot">&lt;-</span> (marbles <span class="sc">*</span> p)<span class="sc">^</span>X_new <span class="sc">*</span> (marbles <span class="sc">*</span> (<span class="dv">1</span><span class="sc">-</span>p))<span class="sc">^</span>(N_new<span class="sc">-</span>X_new)</span>
-<span id="cb15-104"><a href="#cb15-104" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-105"><a href="#cb15-105" aria-hidden="true" tabindex="-1"></a><span class="co"># Number of ways to observe the new sequence, given our prior information</span></span>
-<span id="cb15-106"><a href="#cb15-106" aria-hidden="true" tabindex="-1"></a>prior <span class="ot">&lt;-</span> ways</span>
-<span id="cb15-107"><a href="#cb15-107" aria-hidden="true" tabindex="-1"></a>posterior_ways <span class="ot">&lt;-</span> ways_new <span class="sc">*</span> prior</span>
-<span id="cb15-108"><a href="#cb15-108" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-109"><a href="#cb15-109" aria-hidden="true" tabindex="-1"></a><span class="fu">cbind</span>(p, ways_new, prior, posterior_ways, <span class="at">posterior_probability =</span> posterior_ways <span class="sc">/</span> <span class="fu">sum</span>(posterior_ways))</span>
-<span id="cb15-110"><a href="#cb15-110" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb15-111"><a href="#cb15-111" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-112"><a href="#cb15-112" aria-hidden="true" tabindex="-1"></a>Now this is sort of trivial, because this is the _same_ as if we just thought of counting the full sequence of 4 draws:</span>
-<span id="cb15-113"><a href="#cb15-113" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-116"><a href="#cb15-116" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb15-117"><a href="#cb15-117" aria-hidden="true" tabindex="-1"></a><span class="co"># Possible values of p</span></span>
-<span id="cb15-118"><a href="#cb15-118" aria-hidden="true" tabindex="-1"></a>p <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">0</span>, .<span class="dv">25</span>, .<span class="dv">5</span>, .<span class="dv">75</span>, <span class="dv">1</span>)</span>
-<span id="cb15-119"><a href="#cb15-119" aria-hidden="true" tabindex="-1"></a>marbles <span class="ot">&lt;-</span> <span class="fu">length</span>(p) <span class="sc">-</span> <span class="dv">1</span></span>
-<span id="cb15-120"><a href="#cb15-120" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-121"><a href="#cb15-121" aria-hidden="true" tabindex="-1"></a><span class="co"># Number of samples</span></span>
-<span id="cb15-122"><a href="#cb15-122" aria-hidden="true" tabindex="-1"></a>N <span class="ot">&lt;-</span> <span class="dv">4</span></span>
-<span id="cb15-123"><a href="#cb15-123" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-124"><a href="#cb15-124" aria-hidden="true" tabindex="-1"></a><span class="co"># Observed sequence (1 = blue, 0 = white)</span></span>
-<span id="cb15-125"><a href="#cb15-125" aria-hidden="true" tabindex="-1"></a>X <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">1</span>)</span>
-<span id="cb15-126"><a href="#cb15-126" aria-hidden="true" tabindex="-1"></a>X <span class="ot">&lt;-</span> <span class="fu">sum</span>(X)</span>
-<span id="cb15-127"><a href="#cb15-127" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-128"><a href="#cb15-128" aria-hidden="true" tabindex="-1"></a><span class="co"># How many ways could this happen for each p?</span></span>
-<span id="cb15-129"><a href="#cb15-129" aria-hidden="true" tabindex="-1"></a>ways <span class="ot">&lt;-</span> (marbles <span class="sc">*</span> p)<span class="sc">^</span>X <span class="sc">*</span> (marbles <span class="sc">*</span> (<span class="dv">1</span><span class="sc">-</span>p))<span class="sc">^</span>(N<span class="sc">-</span>X)</span>
-<span id="cb15-130"><a href="#cb15-130" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-131"><a href="#cb15-131" aria-hidden="true" tabindex="-1"></a><span class="fu">cbind</span>(p, ways, <span class="at">posterior_probability =</span> ways <span class="sc">/</span> <span class="fu">sum</span>(ways))</span>
-<span id="cb15-132"><a href="#cb15-132" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb15-133"><a href="#cb15-133" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-134"><a href="#cb15-134" aria-hidden="true" tabindex="-1"></a>This gets at something that was always murky in Bayesian updating: wouldn't (or shouldn't) your _priors_ technically always reflect the most recent information, up to the very second? Meaning that if we set an initial prior, and then collected a single sample, and updated our model, shouldn't the posterior of that model now be our prior for any subsequent estimate? Well, yes, and it turns out (as we've shown about) that these are equivalent ways to think about the mathematical procedure, because you are just enumerating the ways that your sequence of observations could have been observed. So the important piece is just capturing what you know about the parameters at the beginning, and also reflecting any additional information that comes about in the proceeding utilization of information.</span>
-<span id="cb15-135"><a href="#cb15-135" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-136"><a href="#cb15-136" aria-hidden="true" tabindex="-1"></a>I could just wait until _all_ my data is collected over some period of time, combine that with original priors, and get some estimate, or I could sequentially run my estimation procedure each time as a new observation comes in, with everything prior to that being reflected in a prior--it is the same thing. *The key is our assumption about how that intermediate information is being generated sequentially--if we learn additional information after say, the 10th sample, that was never known before, we can then incorporate that into our estimation at that point in time*.</span>
-<span id="cb15-137"><a href="#cb15-137" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-138"><a href="#cb15-138" aria-hidden="true" tabindex="-1"></a><span class="at">&gt; "This updating approach amounts to nothing more than asserting that (1) when we have previous information suggesting there are _W_ ways for a conjecture to produce a previous observation _D_ and (2) we acquire new observations _D*_ that the same conjecture can produce in _W*_ ways, then (3) the number of ways the conjecture can account for both _D_ as well as _D*_ is just the produce _W_ X _W*_...Multiplication is just a shortcut to enumerating and counting up all of the paths through the garden that counld produce all the observations." (25)</span></span>
-<span id="cb15-139"><a href="#cb15-139" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-140"><a href="#cb15-140" aria-hidden="true" tabindex="-1"></a>The example he gives to demonstrate the point on "additional information in between draws" is if suddenly you knew something about how the bags of marbles are produced (which is new data in a different form), which implies that there will be no bags containing all white or all blue marbles, three times as many containing only one blue marble and two times as many containing two blue marbles, both vs. one white marble, then we can now updating our _current_ knowledge from the draws we've already done with this new information:</span>
-<span id="cb15-141"><a href="#cb15-141" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-144"><a href="#cb15-144" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb15-145"><a href="#cb15-145" aria-hidden="true" tabindex="-1"></a><span class="co"># What we know NOW</span></span>
-<span id="cb15-146"><a href="#cb15-146" aria-hidden="true" tabindex="-1"></a>prior <span class="ot">&lt;-</span> posterior_ways</span>
-<span id="cb15-147"><a href="#cb15-147" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-148"><a href="#cb15-148" aria-hidden="true" tabindex="-1"></a><span class="co"># Relative counts of the conjectures</span></span>
-<span id="cb15-149"><a href="#cb15-149" aria-hidden="true" tabindex="-1"></a>counts <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">3</span>, <span class="dv">2</span>, <span class="dv">1</span>, <span class="dv">0</span>)</span>
-<span id="cb15-150"><a href="#cb15-150" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-151"><a href="#cb15-151" aria-hidden="true" tabindex="-1"></a><span class="co"># New ways</span></span>
-<span id="cb15-152"><a href="#cb15-152" aria-hidden="true" tabindex="-1"></a>ways_new <span class="ot">&lt;-</span> prior <span class="sc">*</span> counts</span>
-<span id="cb15-153"><a href="#cb15-153" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-154"><a href="#cb15-154" aria-hidden="true" tabindex="-1"></a><span class="fu">cbind</span>(p, prior, counts, ways_new, <span class="at">posterior_probability =</span> ways_new <span class="sc">/</span> <span class="fu">sum</span>(ways_new))</span>
-<span id="cb15-155"><a href="#cb15-155" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb15-156"><a href="#cb15-156" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-157"><a href="#cb15-157" aria-hidden="true" tabindex="-1"></a>Notice that _if_ we had known about the bag proportions before we did any draws, that would have been the more intuitive prior distribution to start with, yet we would have reached the _same_ answer. We're just enumerating possibilities based on the information we receive.</span>
-<span id="cb15-158"><a href="#cb15-158" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-159"><a href="#cb15-159" aria-hidden="true" tabindex="-1"></a>In this vain, he rarely recommends that we would use a "principle of indifference" (i.e., act like we know _nothing_ about the parameters beforehand, and treat them all as equally likely):</span>
-<span id="cb15-160"><a href="#cb15-160" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-161"><a href="#cb15-161" aria-hidden="true" tabindex="-1"></a><span class="at">&gt; "This book does not use nor endorse "ignorance" priors. As we'll see in later chapters, the structure of the model and the scientific context always provide information that allows us to do better than ignorance." (26)</span></span>
-<span id="cb15-162"><a href="#cb15-162" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-163"><a href="#cb15-163" aria-hidden="true" tabindex="-1"></a>This is obviously true. There is no circumstance where we should claim we know _absolutely nothing_ about. Even if it is just a little, include it in the model.</span>
-<span id="cb15-164"><a href="#cb15-164" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-165"><a href="#cb15-165" aria-hidden="true" tabindex="-1"></a><span class="fu">## Building a model</span></span>
-<span id="cb15-166"><a href="#cb15-166" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-167"><a href="#cb15-167" aria-hidden="true" tabindex="-1"></a>&lt;br&gt;</span>
-<span id="cb15-168"><a href="#cb15-168" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-169"><a href="#cb15-169" aria-hidden="true" tabindex="-1"></a>_Video Lecture From the Author_</span>
-<span id="cb15-170"><a href="#cb15-170" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-171"><a href="#cb15-171" aria-hidden="true" tabindex="-1"></a>{{&lt; video https://www.youtube.com/embed/R1vcdhPBlXA &gt;}}</span>
+<div class="sourceCode" id="cb16" data-shortcodes="false"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="fu"># Small Worlds and Large Worlds</span></span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a><span class="at">&gt; "Colombo </span><span class="co">[</span><span class="ot">Christopher Columbus</span><span class="co">]</span><span class="at"> made a prediction based upon his view that the world was small. But since he lived in a large world, aspects of the prediction were wrong. In his case, the error was lucky." (19)</span></span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>All models are and will always be wrong, that's why they are called models. The "small world" represented by the model can only hope to be reflective of "large world", the actual environment in which the model, insights, and inference that come out of it are used (i.e., where the rubber meets the road).</span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a><span class="fu">## Unraveling the counting process</span></span>
+<span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-9"><a href="#cb16-9" aria-hidden="true" tabindex="-1"></a>The "garden of forking paths" idea is about stretching out the process for counting things. Often in statistics, we just use formulas, or integrals, or whatever other notation to think through logic in our heads. This fundamental, systematic approach to counting lets us see what's really going on behind the scenes. Ultimately, this leads to a more intuitive understanding of what Bayesian modeling is (in McElreath's words): _"really just counting and comparing of possibilities"_ (20).</span>
+<span id="cb16-10"><a href="#cb16-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-11"><a href="#cb16-11" aria-hidden="true" tabindex="-1"></a><span class="fu">### First, the likelihood</span></span>
+<span id="cb16-12"><a href="#cb16-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-13"><a href="#cb16-13" aria-hidden="true" tabindex="-1"></a>In the marble example, he starts by counting the number of ways a particular observed sequence of marble draws could have occurred _given_ an assumed true state of the bag (i.e., a hypothesis, which he calls _conjecture_). Then proceeds to manually count (and draw) the possibilities--nothing fancy about it, just brute force. Once this count is obtained, the question becomes: _what is this collection of counts for all other possible states of the bag?_. This is getting at what Bayesian analysis fundamentally is: determining which state of the world is most likely given the evidence.</span>
+<span id="cb16-14"><a href="#cb16-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-15"><a href="#cb16-15" aria-hidden="true" tabindex="-1"></a><span class="at">&gt; "By comparing these counts, we have part of a solution for a way to rate the relative plausibility of each conjectured bag composition." (23)</span></span>
+<span id="cb16-16"><a href="#cb16-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-17"><a href="#cb16-17" aria-hidden="true" tabindex="-1"></a>The word _relative_ foreshadows many implications in Bayesian analysis, such as the focus on priors and likelihoods (not the normalizing constant), the different approaches to getting at the same answer (counts, rates, etc.), and the focus of comparing possible hypotheses relative to one another (and the whole slate of possibilities).</span>
+<span id="cb16-18"><a href="#cb16-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-19"><a href="#cb16-19" aria-hidden="true" tabindex="-1"></a><span class="fu">#### Translating to familar notation</span></span>
+<span id="cb16-20"><a href="#cb16-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-21"><a href="#cb16-21" aria-hidden="true" tabindex="-1"></a>Since I come at this from the "traditional" statistical point of view, it's helpful to reconcile the approach here with the way I would typically think about it. Namely, we have a bag with four (4) marbles in it, each one being white or blue. Based on a sample from the bag, we want to infer what make up of all marbles is. Thus, the unknown parameter can be thought of as $p$, the proportion of marbles that are blue (or white if we wanted). So, $p$ can be one of five choices: $p \in (0, .25, .5, .75, 1)$. On page 21 it was stated that _"a sequence of three marbles is pulled from the bag, one at a time, replacing the marble each time and shaking the bag before drawing another marble"_--so we are _assuming_ that we are selecting randomly with replacement (as a side note, a key point is our assumption: *we are using our judgement that the sampling method (shaking randomly) is sufficient to assume random, independent draws, but this paradigm leaves the possibility to account for modeling steps where this assumption may not be valid).*</span>
+<span id="cb16-22"><a href="#cb16-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-23"><a href="#cb16-23" aria-hidden="true" tabindex="-1"></a>If we take $N=3$ draws and $X=2$ is the number that were blue, then we can think of:</span>
+<span id="cb16-24"><a href="#cb16-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-25"><a href="#cb16-25" aria-hidden="true" tabindex="-1"></a>$X \sim Binomial(N=3, p)$</span>
+<span id="cb16-26"><a href="#cb16-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-27"><a href="#cb16-27" aria-hidden="true" tabindex="-1"></a>And we get the following counts of possible ways to observe this sequence for each value of $p$.</span>
+<span id="cb16-28"><a href="#cb16-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-31"><a href="#cb16-31" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb16-32"><a href="#cb16-32" aria-hidden="true" tabindex="-1"></a><span class="co"># Possible values of p</span></span>
+<span id="cb16-33"><a href="#cb16-33" aria-hidden="true" tabindex="-1"></a>p <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">0</span>, .<span class="dv">25</span>, .<span class="dv">5</span>, .<span class="dv">75</span>, <span class="dv">1</span>)</span>
+<span id="cb16-34"><a href="#cb16-34" aria-hidden="true" tabindex="-1"></a>marbles <span class="ot">&lt;-</span> <span class="fu">length</span>(p) <span class="sc">-</span> <span class="dv">1</span></span>
+<span id="cb16-35"><a href="#cb16-35" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-36"><a href="#cb16-36" aria-hidden="true" tabindex="-1"></a><span class="co"># Number of samples</span></span>
+<span id="cb16-37"><a href="#cb16-37" aria-hidden="true" tabindex="-1"></a>N <span class="ot">&lt;-</span> <span class="dv">3</span></span>
+<span id="cb16-38"><a href="#cb16-38" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-39"><a href="#cb16-39" aria-hidden="true" tabindex="-1"></a><span class="co"># Observed sequence (1 = blue, 0 = white)</span></span>
+<span id="cb16-40"><a href="#cb16-40" aria-hidden="true" tabindex="-1"></a>X <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">0</span>, <span class="dv">1</span>)</span>
+<span id="cb16-41"><a href="#cb16-41" aria-hidden="true" tabindex="-1"></a>X <span class="ot">&lt;-</span> <span class="fu">sum</span>(X)</span>
+<span id="cb16-42"><a href="#cb16-42" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-43"><a href="#cb16-43" aria-hidden="true" tabindex="-1"></a><span class="co"># How many ways could this happen for each p?</span></span>
+<span id="cb16-44"><a href="#cb16-44" aria-hidden="true" tabindex="-1"></a>ways <span class="ot">&lt;-</span> (marbles <span class="sc">*</span> p)<span class="sc">^</span>X <span class="sc">*</span> (marbles <span class="sc">*</span> (<span class="dv">1</span><span class="sc">-</span>p))<span class="sc">^</span>(N<span class="sc">-</span>X)</span>
+<span id="cb16-45"><a href="#cb16-45" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-46"><a href="#cb16-46" aria-hidden="true" tabindex="-1"></a><span class="fu">cbind</span>(p, ways, <span class="at">posterior_probability =</span> ways <span class="sc">/</span> <span class="fu">sum</span>(ways))</span>
+<span id="cb16-47"><a href="#cb16-47" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-48"><a href="#cb16-48" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb16-49"><a href="#cb16-49" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-50"><a href="#cb16-50" aria-hidden="true" tabindex="-1"></a>This matches what is in the book on page 23. Why? Well because there is a finite number of marbles, and we are re-scaling to be in absolute terms relative to that, instead of being in rate terms. The point is that we can think of the counting process in absolute magnitude (counts), relative (probabilities), or even likelihoods (basically, non-normalized probabilities). They will all produce the _same_ posterior probability suggesting that the bag most likely has 3 blue marbles, because our calculation is _relative_ to span of possible hypotheses (conjectures). </span>
+<span id="cb16-51"><a href="#cb16-51" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-52"><a href="#cb16-52" aria-hidden="true" tabindex="-1"></a>Here we use the full <span class="co">[</span><span class="ot">binomial</span><span class="co">](https://en.wikipedia.org/wiki/Binomial_distribution)</span> distribution for our calculations:</span>
+<span id="cb16-53"><a href="#cb16-53" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-56"><a href="#cb16-56" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb16-57"><a href="#cb16-57" aria-hidden="true" tabindex="-1"></a><span class="co"># Compute traditional binomial probabilities</span></span>
+<span id="cb16-58"><a href="#cb16-58" aria-hidden="true" tabindex="-1"></a>binom_probs <span class="ot">&lt;-</span> <span class="fu">dbinom</span>(<span class="at">x =</span> X, <span class="at">size =</span> N, <span class="at">prob =</span> p)</span>
+<span id="cb16-59"><a href="#cb16-59" aria-hidden="true" tabindex="-1"></a><span class="fu">cbind</span>(p, binom_probs, <span class="at">posterior_probability =</span> binom_probs <span class="sc">/</span> <span class="fu">sum</span>(binom_probs))</span>
+<span id="cb16-60"><a href="#cb16-60" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb16-61"><a href="#cb16-61" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-62"><a href="#cb16-62" aria-hidden="true" tabindex="-1"></a>Now we could even do it without it being normalized (i.e., we don't care if it adds to 1):</span>
+<span id="cb16-63"><a href="#cb16-63" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-66"><a href="#cb16-66" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb16-67"><a href="#cb16-67" aria-hidden="true" tabindex="-1"></a><span class="co"># Compute unnormalized probabilities</span></span>
+<span id="cb16-68"><a href="#cb16-68" aria-hidden="true" tabindex="-1"></a>unnorm_probs <span class="ot">&lt;-</span> p<span class="sc">^</span>X <span class="sc">*</span> (<span class="dv">1</span><span class="sc">-</span>p)<span class="sc">^</span>(N<span class="sc">-</span>X)</span>
+<span id="cb16-69"><a href="#cb16-69" aria-hidden="true" tabindex="-1"></a><span class="fu">cbind</span>(p, unnorm_probs, <span class="at">posterior_probability =</span> unnorm_probs <span class="sc">/</span> <span class="fu">sum</span>(unnorm_probs))</span>
+<span id="cb16-70"><a href="#cb16-70" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb16-71"><a href="#cb16-71" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-72"><a href="#cb16-72" aria-hidden="true" tabindex="-1"></a>They all lead to same _relative_ posterior probability (3 blue marbles).</span>
+<span id="cb16-73"><a href="#cb16-73" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-74"><a href="#cb16-74" aria-hidden="true" tabindex="-1"></a>One key caveat here that comes next: these results assume that each value of $p$ is equally likely. But as he points out:</span>
+<span id="cb16-75"><a href="#cb16-75" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-76"><a href="#cb16-76" aria-hidden="true" tabindex="-1"></a><span class="at">&gt; "We may have additional information about the relative plausibility of each conjecture. This information could arise from knowledge of how the contens of the bag were generated." (25)</span></span>
+<span id="cb16-77"><a href="#cb16-77" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-78"><a href="#cb16-78" aria-hidden="true" tabindex="-1"></a>This gets at the idea of a _prior_ distribution. We may know something about how the bag was arranged, such that we have an inkling that a particular value of $p$ is more likely to be true than the rest. In that case, what we have done above doesn't work.</span>
+<span id="cb16-79"><a href="#cb16-79" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-80"><a href="#cb16-80" aria-hidden="true" tabindex="-1"></a><span class="fu">### Incorporating prior knowledge</span></span>
+<span id="cb16-81"><a href="#cb16-81" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-82"><a href="#cb16-82" aria-hidden="true" tabindex="-1"></a>Since we've just established the number of ways to observe the original sequence of draws (blue, white, blue), we now consider that as our _current_ model (or information) we know about the process. So if we took another draw, we can consider our current information as the _prior_ knowledge, and combine that with the number of ways we could observe the next blue marble:</span>
+<span id="cb16-83"><a href="#cb16-83" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-84"><a href="#cb16-84" aria-hidden="true" tabindex="-1"></a>_Original_</span>
+<span id="cb16-87"><a href="#cb16-87" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb16-88"><a href="#cb16-88" aria-hidden="true" tabindex="-1"></a><span class="fu">cbind</span>(p, ways, <span class="at">posterior_probability =</span> ways <span class="sc">/</span> <span class="fu">sum</span>(ways))</span>
+<span id="cb16-89"><a href="#cb16-89" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-90"><a href="#cb16-90" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb16-91"><a href="#cb16-91" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-92"><a href="#cb16-92" aria-hidden="true" tabindex="-1"></a>_New_</span>
+<span id="cb16-95"><a href="#cb16-95" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb16-96"><a href="#cb16-96" aria-hidden="true" tabindex="-1"></a><span class="co"># New marble drawn blue</span></span>
+<span id="cb16-97"><a href="#cb16-97" aria-hidden="true" tabindex="-1"></a>X_new <span class="ot">&lt;-</span> <span class="dv">1</span></span>
+<span id="cb16-98"><a href="#cb16-98" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-99"><a href="#cb16-99" aria-hidden="true" tabindex="-1"></a><span class="co"># Number of trials</span></span>
+<span id="cb16-100"><a href="#cb16-100" aria-hidden="true" tabindex="-1"></a>N_new <span class="ot">&lt;-</span> <span class="fu">length</span>(X_new)</span>
+<span id="cb16-101"><a href="#cb16-101" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-102"><a href="#cb16-102" aria-hidden="true" tabindex="-1"></a><span class="co"># How many ways could this happen for each p?</span></span>
+<span id="cb16-103"><a href="#cb16-103" aria-hidden="true" tabindex="-1"></a>ways_new <span class="ot">&lt;-</span> (marbles <span class="sc">*</span> p)<span class="sc">^</span>X_new <span class="sc">*</span> (marbles <span class="sc">*</span> (<span class="dv">1</span><span class="sc">-</span>p))<span class="sc">^</span>(N_new<span class="sc">-</span>X_new)</span>
+<span id="cb16-104"><a href="#cb16-104" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-105"><a href="#cb16-105" aria-hidden="true" tabindex="-1"></a><span class="co"># Number of ways to observe the new sequence, given our prior information</span></span>
+<span id="cb16-106"><a href="#cb16-106" aria-hidden="true" tabindex="-1"></a>prior <span class="ot">&lt;-</span> ways</span>
+<span id="cb16-107"><a href="#cb16-107" aria-hidden="true" tabindex="-1"></a>posterior_ways <span class="ot">&lt;-</span> ways_new <span class="sc">*</span> prior</span>
+<span id="cb16-108"><a href="#cb16-108" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-109"><a href="#cb16-109" aria-hidden="true" tabindex="-1"></a><span class="fu">cbind</span>(p, ways_new, prior, posterior_ways, <span class="at">posterior_probability =</span> posterior_ways <span class="sc">/</span> <span class="fu">sum</span>(posterior_ways))</span>
+<span id="cb16-110"><a href="#cb16-110" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb16-111"><a href="#cb16-111" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-112"><a href="#cb16-112" aria-hidden="true" tabindex="-1"></a>Now this is sort of trivial, because this is the _same_ as if we just thought of counting the full sequence of 4 draws:</span>
+<span id="cb16-113"><a href="#cb16-113" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-116"><a href="#cb16-116" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb16-117"><a href="#cb16-117" aria-hidden="true" tabindex="-1"></a><span class="co"># Possible values of p</span></span>
+<span id="cb16-118"><a href="#cb16-118" aria-hidden="true" tabindex="-1"></a>p <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">0</span>, .<span class="dv">25</span>, .<span class="dv">5</span>, .<span class="dv">75</span>, <span class="dv">1</span>)</span>
+<span id="cb16-119"><a href="#cb16-119" aria-hidden="true" tabindex="-1"></a>marbles <span class="ot">&lt;-</span> <span class="fu">length</span>(p) <span class="sc">-</span> <span class="dv">1</span></span>
+<span id="cb16-120"><a href="#cb16-120" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-121"><a href="#cb16-121" aria-hidden="true" tabindex="-1"></a><span class="co"># Number of samples</span></span>
+<span id="cb16-122"><a href="#cb16-122" aria-hidden="true" tabindex="-1"></a>N <span class="ot">&lt;-</span> <span class="dv">4</span></span>
+<span id="cb16-123"><a href="#cb16-123" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-124"><a href="#cb16-124" aria-hidden="true" tabindex="-1"></a><span class="co"># Observed sequence (1 = blue, 0 = white)</span></span>
+<span id="cb16-125"><a href="#cb16-125" aria-hidden="true" tabindex="-1"></a>X <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">1</span>)</span>
+<span id="cb16-126"><a href="#cb16-126" aria-hidden="true" tabindex="-1"></a>X <span class="ot">&lt;-</span> <span class="fu">sum</span>(X)</span>
+<span id="cb16-127"><a href="#cb16-127" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-128"><a href="#cb16-128" aria-hidden="true" tabindex="-1"></a><span class="co"># How many ways could this happen for each p?</span></span>
+<span id="cb16-129"><a href="#cb16-129" aria-hidden="true" tabindex="-1"></a>ways <span class="ot">&lt;-</span> (marbles <span class="sc">*</span> p)<span class="sc">^</span>X <span class="sc">*</span> (marbles <span class="sc">*</span> (<span class="dv">1</span><span class="sc">-</span>p))<span class="sc">^</span>(N<span class="sc">-</span>X)</span>
+<span id="cb16-130"><a href="#cb16-130" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-131"><a href="#cb16-131" aria-hidden="true" tabindex="-1"></a><span class="fu">cbind</span>(p, ways, <span class="at">posterior_probability =</span> ways <span class="sc">/</span> <span class="fu">sum</span>(ways))</span>
+<span id="cb16-132"><a href="#cb16-132" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb16-133"><a href="#cb16-133" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-134"><a href="#cb16-134" aria-hidden="true" tabindex="-1"></a>This gets at something that was always murky in Bayesian updating: wouldn't (or shouldn't) your _priors_ technically always reflect the most recent information, up to the very second? Meaning that if we set an initial prior, and then collected a single sample, and updated our model, shouldn't the posterior of that model now be our prior for any subsequent estimate? Well, yes, and it turns out (as we've shown about) that these are equivalent ways to think about the mathematical procedure, because you are just enumerating the ways that your sequence of observations could have been observed. So the important piece is just capturing what you know about the parameters at the beginning, and also reflecting any additional information that comes about in the proceeding utilization of information.</span>
+<span id="cb16-135"><a href="#cb16-135" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-136"><a href="#cb16-136" aria-hidden="true" tabindex="-1"></a>I could just wait until _all_ my data is collected over some period of time, combine that with original priors, and get some estimate, or I could sequentially run my estimation procedure each time as a new observation comes in, with everything prior to that being reflected in a prior--it is the same thing. *The key is our assumption about how that intermediate information is being generated sequentially--if we learn additional information after say, the 10th sample, that was never known before, we can then incorporate that into our estimation at that point in time*.</span>
+<span id="cb16-137"><a href="#cb16-137" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-138"><a href="#cb16-138" aria-hidden="true" tabindex="-1"></a><span class="at">&gt; "This updating approach amounts to nothing more than asserting that (1) when we have previous information suggesting there are _W_ ways for a conjecture to produce a previous observation _D_ and (2) we acquire new observations _D*_ that the same conjecture can produce in _W*_ ways, then (3) the number of ways the conjecture can account for both _D_ as well as _D*_ is just the produce _W_ X _W*_...Multiplication is just a shortcut to enumerating and counting up all of the paths through the garden that counld produce all the observations." (25)</span></span>
+<span id="cb16-139"><a href="#cb16-139" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-140"><a href="#cb16-140" aria-hidden="true" tabindex="-1"></a>The example he gives to demonstrate the point on "additional information in between draws" is if suddenly you knew something about how the bags of marbles are produced (which is new data in a different form), which implies that there will be no bags containing all white or all blue marbles, three times as many containing only one blue marble and two times as many containing two blue marbles, both vs. one white marble, then we can now updating our _current_ knowledge from the draws we've already done with this new information:</span>
+<span id="cb16-141"><a href="#cb16-141" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-144"><a href="#cb16-144" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb16-145"><a href="#cb16-145" aria-hidden="true" tabindex="-1"></a><span class="co"># What we know NOW</span></span>
+<span id="cb16-146"><a href="#cb16-146" aria-hidden="true" tabindex="-1"></a>prior <span class="ot">&lt;-</span> posterior_ways</span>
+<span id="cb16-147"><a href="#cb16-147" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-148"><a href="#cb16-148" aria-hidden="true" tabindex="-1"></a><span class="co"># Relative counts of the conjectures</span></span>
+<span id="cb16-149"><a href="#cb16-149" aria-hidden="true" tabindex="-1"></a>counts <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">3</span>, <span class="dv">2</span>, <span class="dv">1</span>, <span class="dv">0</span>)</span>
+<span id="cb16-150"><a href="#cb16-150" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-151"><a href="#cb16-151" aria-hidden="true" tabindex="-1"></a><span class="co"># New ways</span></span>
+<span id="cb16-152"><a href="#cb16-152" aria-hidden="true" tabindex="-1"></a>ways_new <span class="ot">&lt;-</span> prior <span class="sc">*</span> counts</span>
+<span id="cb16-153"><a href="#cb16-153" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-154"><a href="#cb16-154" aria-hidden="true" tabindex="-1"></a><span class="fu">cbind</span>(p, prior, counts, ways_new, <span class="at">posterior_probability =</span> ways_new <span class="sc">/</span> <span class="fu">sum</span>(ways_new))</span>
+<span id="cb16-155"><a href="#cb16-155" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb16-156"><a href="#cb16-156" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-157"><a href="#cb16-157" aria-hidden="true" tabindex="-1"></a>Notice that _if_ we had known about the bag proportions before we did any draws, that would have been the more intuitive prior distribution to start with, yet we would have reached the _same_ answer. We're just enumerating possibilities based on the information we receive.</span>
+<span id="cb16-158"><a href="#cb16-158" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-159"><a href="#cb16-159" aria-hidden="true" tabindex="-1"></a>In this vain, he rarely recommends that we would use a "principle of indifference" (i.e., act like we know _nothing_ about the parameters beforehand, and treat them all as equally likely):</span>
+<span id="cb16-160"><a href="#cb16-160" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-161"><a href="#cb16-161" aria-hidden="true" tabindex="-1"></a><span class="at">&gt; "This book does not use nor endorse "ignorance" priors. As we'll see in later chapters, the structure of the model and the scientific context always provide information that allows us to do better than ignorance." (26)</span></span>
+<span id="cb16-162"><a href="#cb16-162" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-163"><a href="#cb16-163" aria-hidden="true" tabindex="-1"></a>This is obviously true. There is no circumstance where we should claim we know _absolutely nothing_ about. Even if it is just a little, include it in the model.</span>
+<span id="cb16-164"><a href="#cb16-164" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-165"><a href="#cb16-165" aria-hidden="true" tabindex="-1"></a><span class="fu">## Building a model</span></span>
+<span id="cb16-166"><a href="#cb16-166" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-167"><a href="#cb16-167" aria-hidden="true" tabindex="-1"></a>He characterizes the model building process into three steps, which supports our previous profundity about Bayesian thinking: switching from thinking about the _data_ to the _model_, and only use data as a fleeting piece of information to fine tune that model. The three steps are:</span>
+<span id="cb16-168"><a href="#cb16-168" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-169"><a href="#cb16-169" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>Data story: Thinking about the _data-generating process_ (no data included)</span>
+<span id="cb16-170"><a href="#cb16-170" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>Update: Use your data to now revise, or as he says, "educate" your model based on evidence</span>
+<span id="cb16-171"><a href="#cb16-171" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>Evaluate: That is your model as of _now_, but up to this point in time, we may need to change it</span>
+<span id="cb16-172"><a href="#cb16-172" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-173"><a href="#cb16-173" aria-hidden="true" tabindex="-1"></a><span class="at">&gt; "But all data stories are complete, in the sense that they are sufficient for specifying an algorithm for simulating new data." (28)</span></span>
+<span id="cb16-174"><a href="#cb16-174" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-175"><a href="#cb16-175" aria-hidden="true" tabindex="-1"></a>This is profound. Because once we specify the data-generating process, we _think_ we now know (to the best of our knowledge), how an subsequent data would be generated. Thus, we don't actually need real data to begin evaluating the truth to our model. We can start simulating it and see how it plays out. If stuff starts to look how it does it real life, we may be on the right track, and then could move forward with getting real data to inform our estimates.</span>
+<span id="cb16-176"><a href="#cb16-176" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-177"><a href="#cb16-177" aria-hidden="true" tabindex="-1"></a><span class="at">&gt; "When you are forced to consider sampling and measurement and make a precise statement of how temperature predicts ran, many stories and resulting models will be consistent with the same vague hypothesis. Resolving that ambiguity often leads to important realizations and model revisions, before any model is fit to data." (29)</span></span>
+<span id="cb16-178"><a href="#cb16-178" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-179"><a href="#cb16-179" aria-hidden="true" tabindex="-1"></a>This is exactly my point I made in @sec-flaws-in-falsifiability. There are infinite ways to procedurally carry out a study answering the same question (i.e., how you define things, how data is collected (exactly), every detailed assumption made along the way, etc.). All of these nuances can have drastic effects on the ultimate conclusions made.</span>
+<span id="cb16-180"><a href="#cb16-180" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-181"><a href="#cb16-181" aria-hidden="true" tabindex="-1"></a><span class="fu">### Updating priors</span></span>
+<span id="cb16-182"><a href="#cb16-182" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-183"><a href="#cb16-183" aria-hidden="true" tabindex="-1"></a>He goes through the concept of what Bayesian updating is to get a feel for it. We can recreate Figure 2.5 (page 30) to better intuit what is happening behind the scenes.</span>
+<span id="cb16-184"><a href="#cb16-184" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-185"><a href="#cb16-185" aria-hidden="true" tabindex="-1"></a><span class="in">```{r, message=FALSE}</span></span>
+<span id="cb16-186"><a href="#cb16-186" aria-hidden="true" tabindex="-1"></a><span class="in">library(tidyverse)</span></span>
+<span id="cb16-187"><a href="#cb16-187" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-188"><a href="#cb16-188" aria-hidden="true" tabindex="-1"></a><span class="in"># The observed sample sequence</span></span>
+<span id="cb16-189"><a href="#cb16-189" aria-hidden="true" tabindex="-1"></a><span class="in">observed_sample &lt;- c(1, 0, 1, 1, 1, 0, 1, 0, 1) # 1 = water; 0 = land</span></span>
+<span id="cb16-190"><a href="#cb16-190" aria-hidden="true" tabindex="-1"></a><span class="in">N &lt;- length(observed_sample)</span></span>
+<span id="cb16-191"><a href="#cb16-191" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-192"><a href="#cb16-192" aria-hidden="true" tabindex="-1"></a><span class="in"># Approximate the set of inifinite p-values by a large set of discrete ones</span></span>
+<span id="cb16-193"><a href="#cb16-193" aria-hidden="true" tabindex="-1"></a><span class="in">p_continuous &lt;- seq(0, 1, .01)</span></span>
+<span id="cb16-194"><a href="#cb16-194" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-195"><a href="#cb16-195" aria-hidden="true" tabindex="-1"></a><span class="in"># Set the prior probability (uniform over the possibly choices)</span></span>
+<span id="cb16-196"><a href="#cb16-196" aria-hidden="true" tabindex="-1"></a><span class="in">prior &lt;- rep(1 / length(p_continuous), length(p_continuous))</span></span>
+<span id="cb16-197"><a href="#cb16-197" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-198"><a href="#cb16-198" aria-hidden="true" tabindex="-1"></a><span class="in"># Set the current posterior as the prior (before any data collected)</span></span>
+<span id="cb16-199"><a href="#cb16-199" aria-hidden="true" tabindex="-1"></a><span class="in">last_posterior &lt;- prior</span></span>
+<span id="cb16-200"><a href="#cb16-200" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-201"><a href="#cb16-201" aria-hidden="true" tabindex="-1"></a><span class="in"># Make result set</span></span>
+<span id="cb16-202"><a href="#cb16-202" aria-hidden="true" tabindex="-1"></a><span class="in">results &lt;- tibble()</span></span>
+<span id="cb16-203"><a href="#cb16-203" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-204"><a href="#cb16-204" aria-hidden="true" tabindex="-1"></a><span class="in"># For each value in the observed sample </span></span>
+<span id="cb16-205"><a href="#cb16-205" aria-hidden="true" tabindex="-1"></a><span class="in">for(i in 1:N) {</span></span>
+<span id="cb16-206"><a href="#cb16-206" aria-hidden="true" tabindex="-1"></a><span class="in">  </span></span>
+<span id="cb16-207"><a href="#cb16-207" aria-hidden="true" tabindex="-1"></a><span class="in">  # 1. Get the sub-sample</span></span>
+<span id="cb16-208"><a href="#cb16-208" aria-hidden="true" tabindex="-1"></a><span class="in">  sub_sample &lt;- observed_sample[1:i]</span></span>
+<span id="cb16-209"><a href="#cb16-209" aria-hidden="true" tabindex="-1"></a><span class="in">  </span></span>
+<span id="cb16-210"><a href="#cb16-210" aria-hidden="true" tabindex="-1"></a><span class="in">  # 2. Compute metrics (the number of water samples, and the total number of spins)</span></span>
+<span id="cb16-211"><a href="#cb16-211" aria-hidden="true" tabindex="-1"></a><span class="in">  W_temp &lt;- sum(sub_sample)</span></span>
+<span id="cb16-212"><a href="#cb16-212" aria-hidden="true" tabindex="-1"></a><span class="in">  N_temp &lt;- length(sub_sample)</span></span>
+<span id="cb16-213"><a href="#cb16-213" aria-hidden="true" tabindex="-1"></a><span class="in">  </span></span>
+<span id="cb16-214"><a href="#cb16-214" aria-hidden="true" tabindex="-1"></a><span class="in">  # 3. Compute the likelihood for each p</span></span>
+<span id="cb16-215"><a href="#cb16-215" aria-hidden="true" tabindex="-1"></a><span class="in">  temp_likelihood &lt;- p_continuous^W_temp * (1 - p_continuous)^(N_temp - W_temp)</span></span>
+<span id="cb16-216"><a href="#cb16-216" aria-hidden="true" tabindex="-1"></a><span class="in">  </span></span>
+<span id="cb16-217"><a href="#cb16-217" aria-hidden="true" tabindex="-1"></a><span class="in">  # 4. Posterior</span></span>
+<span id="cb16-218"><a href="#cb16-218" aria-hidden="true" tabindex="-1"></a><span class="in">  temp_posterior &lt;- temp_likelihood / sum(temp_likelihood)</span></span>
+<span id="cb16-219"><a href="#cb16-219" aria-hidden="true" tabindex="-1"></a><span class="in">  </span></span>
+<span id="cb16-220"><a href="#cb16-220" aria-hidden="true" tabindex="-1"></a><span class="in">  # 5. Add to results</span></span>
+<span id="cb16-221"><a href="#cb16-221" aria-hidden="true" tabindex="-1"></a><span class="in">  results &lt;-</span></span>
+<span id="cb16-222"><a href="#cb16-222" aria-hidden="true" tabindex="-1"></a><span class="in">    results |&gt;</span></span>
+<span id="cb16-223"><a href="#cb16-223" aria-hidden="true" tabindex="-1"></a><span class="in">    bind_rows(</span></span>
+<span id="cb16-224"><a href="#cb16-224" aria-hidden="true" tabindex="-1"></a><span class="in">      tibble(</span></span>
+<span id="cb16-225"><a href="#cb16-225" aria-hidden="true" tabindex="-1"></a><span class="in">        sample = i,</span></span>
+<span id="cb16-226"><a href="#cb16-226" aria-hidden="true" tabindex="-1"></a><span class="in">        sequence = paste(sub_sample, collapse = ","),</span></span>
+<span id="cb16-227"><a href="#cb16-227" aria-hidden="true" tabindex="-1"></a><span class="in">        p_continuous,</span></span>
+<span id="cb16-228"><a href="#cb16-228" aria-hidden="true" tabindex="-1"></a><span class="in">        likelihood = temp_likelihood,</span></span>
+<span id="cb16-229"><a href="#cb16-229" aria-hidden="true" tabindex="-1"></a><span class="in">        current = temp_posterior,</span></span>
+<span id="cb16-230"><a href="#cb16-230" aria-hidden="true" tabindex="-1"></a><span class="in">        last = last_posterior</span></span>
+<span id="cb16-231"><a href="#cb16-231" aria-hidden="true" tabindex="-1"></a><span class="in">      )</span></span>
+<span id="cb16-232"><a href="#cb16-232" aria-hidden="true" tabindex="-1"></a><span class="in">    )</span></span>
+<span id="cb16-233"><a href="#cb16-233" aria-hidden="true" tabindex="-1"></a><span class="in">  </span></span>
+<span id="cb16-234"><a href="#cb16-234" aria-hidden="true" tabindex="-1"></a><span class="in">  # Set the new last posterior</span></span>
+<span id="cb16-235"><a href="#cb16-235" aria-hidden="true" tabindex="-1"></a><span class="in">  last_posterior &lt;- temp_posterior</span></span>
+<span id="cb16-236"><a href="#cb16-236" aria-hidden="true" tabindex="-1"></a><span class="in">  </span></span>
+<span id="cb16-237"><a href="#cb16-237" aria-hidden="true" tabindex="-1"></a><span class="in">}</span></span>
+<span id="cb16-238"><a href="#cb16-238" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-239"><a href="#cb16-239" aria-hidden="true" tabindex="-1"></a><span class="in">results |&gt;</span></span>
+<span id="cb16-240"><a href="#cb16-240" aria-hidden="true" tabindex="-1"></a><span class="in">  </span></span>
+<span id="cb16-241"><a href="#cb16-241" aria-hidden="true" tabindex="-1"></a><span class="in">  # Send down the rows</span></span>
+<span id="cb16-242"><a href="#cb16-242" aria-hidden="true" tabindex="-1"></a><span class="in">  pivot_longer(</span></span>
+<span id="cb16-243"><a href="#cb16-243" aria-hidden="true" tabindex="-1"></a><span class="in">    cols = c(last, current)</span></span>
+<span id="cb16-244"><a href="#cb16-244" aria-hidden="true" tabindex="-1"></a><span class="in">  ) %&gt;%</span></span>
+<span id="cb16-245"><a href="#cb16-245" aria-hidden="true" tabindex="-1"></a><span class="in">  </span></span>
+<span id="cb16-246"><a href="#cb16-246" aria-hidden="true" tabindex="-1"></a><span class="in">  # Make a plot</span></span>
+<span id="cb16-247"><a href="#cb16-247" aria-hidden="true" tabindex="-1"></a><span class="in">  ggplot() +</span></span>
+<span id="cb16-248"><a href="#cb16-248" aria-hidden="true" tabindex="-1"></a><span class="in">  geom_area(</span></span>
+<span id="cb16-249"><a href="#cb16-249" aria-hidden="true" tabindex="-1"></a><span class="in">    aes(</span></span>
+<span id="cb16-250"><a href="#cb16-250" aria-hidden="true" tabindex="-1"></a><span class="in">      x = p_continuous,</span></span>
+<span id="cb16-251"><a href="#cb16-251" aria-hidden="true" tabindex="-1"></a><span class="in">      y = value,</span></span>
+<span id="cb16-252"><a href="#cb16-252" aria-hidden="true" tabindex="-1"></a><span class="in">      fill = name</span></span>
+<span id="cb16-253"><a href="#cb16-253" aria-hidden="true" tabindex="-1"></a><span class="in">    ),</span></span>
+<span id="cb16-254"><a href="#cb16-254" aria-hidden="true" tabindex="-1"></a><span class="in">    color = "black",</span></span>
+<span id="cb16-255"><a href="#cb16-255" aria-hidden="true" tabindex="-1"></a><span class="in">    alpha = .65,</span></span>
+<span id="cb16-256"><a href="#cb16-256" aria-hidden="true" tabindex="-1"></a><span class="in">    position = "identity"</span></span>
+<span id="cb16-257"><a href="#cb16-257" aria-hidden="true" tabindex="-1"></a><span class="in">  ) +</span></span>
+<span id="cb16-258"><a href="#cb16-258" aria-hidden="true" tabindex="-1"></a><span class="in">  facet_wrap(</span></span>
+<span id="cb16-259"><a href="#cb16-259" aria-hidden="true" tabindex="-1"></a><span class="in">    ~paste0("Spin: ", factor(sample), " \nSample: ", sequence)</span></span>
+<span id="cb16-260"><a href="#cb16-260" aria-hidden="true" tabindex="-1"></a><span class="in">  ) +</span></span>
+<span id="cb16-261"><a href="#cb16-261" aria-hidden="true" tabindex="-1"></a><span class="in">  theme(</span></span>
+<span id="cb16-262"><a href="#cb16-262" aria-hidden="true" tabindex="-1"></a><span class="in">    legend.position = "top",</span></span>
+<span id="cb16-263"><a href="#cb16-263" aria-hidden="true" tabindex="-1"></a><span class="in">    panel.background = element_blank(),</span></span>
+<span id="cb16-264"><a href="#cb16-264" aria-hidden="true" tabindex="-1"></a><span class="in">    panel.grid.major.y = element_line(colour = "gray"),</span></span>
+<span id="cb16-265"><a href="#cb16-265" aria-hidden="true" tabindex="-1"></a><span class="in">    axis.ticks.y = element_blank(),</span></span>
+<span id="cb16-266"><a href="#cb16-266" aria-hidden="true" tabindex="-1"></a><span class="in">    axis.text.y = element_blank()</span></span>
+<span id="cb16-267"><a href="#cb16-267" aria-hidden="true" tabindex="-1"></a><span class="in">  ) +</span></span>
+<span id="cb16-268"><a href="#cb16-268" aria-hidden="true" tabindex="-1"></a><span class="in">  xlab("p") +</span></span>
+<span id="cb16-269"><a href="#cb16-269" aria-hidden="true" tabindex="-1"></a><span class="in">  ylab("Posterior Probability") +</span></span>
+<span id="cb16-270"><a href="#cb16-270" aria-hidden="true" tabindex="-1"></a><span class="in">  labs(</span></span>
+<span id="cb16-271"><a href="#cb16-271" aria-hidden="true" tabindex="-1"></a><span class="in">    fill = "Posterior"</span></span>
+<span id="cb16-272"><a href="#cb16-272" aria-hidden="true" tabindex="-1"></a><span class="in">  ) +</span></span>
+<span id="cb16-273"><a href="#cb16-273" aria-hidden="true" tabindex="-1"></a><span class="in">  scale_fill_manual(</span></span>
+<span id="cb16-274"><a href="#cb16-274" aria-hidden="true" tabindex="-1"></a><span class="in">    values = c("blue", "darkgray")</span></span>
+<span id="cb16-275"><a href="#cb16-275" aria-hidden="true" tabindex="-1"></a><span class="in">  ) </span></span>
+<span id="cb16-276"><a href="#cb16-276" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb16-277"><a href="#cb16-277" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-278"><a href="#cb16-278" aria-hidden="true" tabindex="-1"></a>_Note that this is actually just a discrete approximation of the true continuous, analytical solution, but it covers the idea of what is going on. I previously went in depth on this specific problem from the book [here](https://www.zajichekstats.com/post/statistical-rethinking-2023-class-notes/#lecture2) which provides much more detail and code._</span>
+<span id="cb16-279"><a href="#cb16-279" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-280"><a href="#cb16-280" aria-hidden="true" tabindex="-1"></a><span class="at">&gt; "Notice that every updated set of plausibilities becomes the initial plausibilities for the next observation. Every conclusion is the starting point for future inference." (31)</span></span>
+<span id="cb16-281"><a href="#cb16-281" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-282"><a href="#cb16-282" aria-hidden="true" tabindex="-1"></a>This supports the idea that our _model_ is the living, breathing thing, and that we should use everything we know up to _now_ to inform it. Then use new information to subsequently update it as time goes on. *Our model is never complete*.</span>
+<span id="cb16-283"><a href="#cb16-283" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-284"><a href="#cb16-284" aria-hidden="true" tabindex="-1"></a>Another crucial point about considering sequential updates versus using your entire data set in a single updating step:</span>
+<span id="cb16-285"><a href="#cb16-285" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-286"><a href="#cb16-286" aria-hidden="true" tabindex="-1"></a><span class="at">&gt; "So the data could be presented to your model in any order, or all at once even. In most cases, you will present the data all at once, for the sake of convenience. But it's important to realize that this merely represents abbreviation of an iterated learning process." (31)</span></span>
+<span id="cb16-287"><a href="#cb16-287" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-288"><a href="#cb16-288" aria-hidden="true" tabindex="-1"></a>There is a catch though, as reflected later:</span>
+<span id="cb16-289"><a href="#cb16-289" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-290"><a href="#cb16-290" aria-hidden="true" tabindex="-1"></a><span class="at">&gt; "That is only true, however, because the model assumes that order is irrelevant to inference. When something is irrelevant to the machine, it won't affect the inference directly. But it may affect it indirectly, because the data will depend upon order." (31)</span></span>
+<span id="cb16-291"><a href="#cb16-291" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-292"><a href="#cb16-292" aria-hidden="true" tabindex="-1"></a>Hence the importance of _understanding_ the data-generating process.</span>
+<span id="cb16-293"><a href="#cb16-293" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-294"><a href="#cb16-294" aria-hidden="true" tabindex="-1"></a><span class="fu">### Bayesian models need no data</span></span>
+<span id="cb16-295"><a href="#cb16-295" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-296"><a href="#cb16-296" aria-hidden="true" tabindex="-1"></a>In the _Rethinking_ box on page 31, he discusses a crucial point related to what we've talked about: that there is no sample size requirement for Bayesian inference. This again is a _key_ reason why this paradigm is superior. We aren't stuck in asymptotics and arbitrary sample size cutoffs (e.g., N=30). We can specify our model, with prior information, using the best available knowledge we have up to this point in time, and actually get reliable estimates. Then as we collect a single observation, our new (posterior) estimates will nicely update to reflect the (likely little) amount of information contained in it, instead of needing to gather a bunch of data in order to get even get something interpretable. I previously discussed this in depth with an example here:</span>
+<span id="cb16-297"><a href="#cb16-297" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-298"><a href="#cb16-298" aria-hidden="true" tabindex="-1"></a>{{&lt; video https://www.youtube.com/embed/bUerkVsCwtA &gt;}}</span>
+<span id="cb16-299"><a href="#cb16-299" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-300"><a href="#cb16-300" aria-hidden="true" tabindex="-1"></a><span class="fu">### Tie inferences back to what matters</span></span>
+<span id="cb16-301"><a href="#cb16-301" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-302"><a href="#cb16-302" aria-hidden="true" tabindex="-1"></a>It's not enough to just provide an estimate and say "it matters" or not, like we arbitrarily do with frequentist p-values and 5% thresholds. These are empty statements. And again, for a result to be meaningful, we need to _feel it in our bones_. If all results were presented with such relevance, there wouldn't be so much controversy about the value of "science". This problem in large part in our society is due to the lacksidasical approach to assigning meaning to estimates, declaring scientific certainty, and not actually doing to the due diligence of acknowledging nuances to why some things matter to some people and some don't. </span>
+<span id="cb16-303"><a href="#cb16-303" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-304"><a href="#cb16-304" aria-hidden="true" tabindex="-1"></a>This point is hit on in the _Evaluate_ section (2.2.3) of the book:</span>
+<span id="cb16-305"><a href="#cb16-305" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-306"><a href="#cb16-306" aria-hidden="true" tabindex="-1"></a><span class="at">&gt; "Instead, the objective is to check the model's adequacy for some purpose. This usually means asking and answering additional questions, beyond those that originally constructed the model. Both the questions and answers will depend upon the scientific context." (32)</span></span>
+<span id="cb16-307"><a href="#cb16-307" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-308"><a href="#cb16-308" aria-hidden="true" tabindex="-1"></a>When we just blindly run statistical tests, get a p-value less than 5%, and then declare that "science shows this thing, and anyone who disregards it is anti-science", we've entered into something that is more religious, not scientific. Because we haven't actually convinced the person that these results matter. It is our job to frame scientific questions, their scope, and the subsequent results/interpretation closer something tangible that makes people _feel_ the results.</span>
+<span id="cb16-309"><a href="#cb16-309" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-310"><a href="#cb16-310" aria-hidden="true" tabindex="-1"></a>As the great book <span class="co">[</span><span class="ot">The Cult of Statistical Significance: How the Standard Error Costs Us Jobs, Justice, and Lives</span><span class="co">](https://press.umich.edu/Books/T/The-Cult-of-Statistical-Significance2)</span> says:</span>
+<span id="cb16-311"><a href="#cb16-311" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-312"><a href="#cb16-312" aria-hidden="true" tabindex="-1"></a><span class="at">&gt; "Real science changes one’s mind. That’s one way to see that the proliferation of unpersuasive significance tests is not real science." (page 112)</span></span>
+<span id="cb16-313"><a href="#cb16-313" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-314"><a href="#cb16-314" aria-hidden="true" tabindex="-1"></a>and </span>
+<span id="cb16-315"><a href="#cb16-315" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-316"><a href="#cb16-316" aria-hidden="true" tabindex="-1"></a><span class="at">&gt; "She can test her belief in the price effect by looking at the magnitudes, using, for example, the highly advanced technique common in data-heavy articles in physics journals: ‘interocular trauma’. That is, she can look and see if the result hits her between the eyes." (page 72)</span></span>
+<span id="cb16-317"><a href="#cb16-317" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-318"><a href="#cb16-318" aria-hidden="true" tabindex="-1"></a>See a much more extensive discussion of this book, and a large list of quotes from that book that I love, <span class="co">[</span><span class="ot">here</span><span class="co">](https://www.zajichekstats.com/post/statistical-significance-is-insignificant/)</span>.</span>
+<span id="cb16-319"><a href="#cb16-319" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-320"><a href="#cb16-320" aria-hidden="true" tabindex="-1"></a>&lt;br&gt;</span>
+<span id="cb16-321"><a href="#cb16-321" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-322"><a href="#cb16-322" aria-hidden="true" tabindex="-1"></a>_Video Lecture From the Author_</span>
+<span id="cb16-323"><a href="#cb16-323" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-324"><a href="#cb16-324" aria-hidden="true" tabindex="-1"></a>{{&lt; video https://www.youtube.com/embed/R1vcdhPBlXA &gt;}}</span>
 </code><button title="Copy to Clipboard" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></pre></div>
 </div></div></div></div></div>
 </div> <!-- /content -->

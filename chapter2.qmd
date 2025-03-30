@@ -151,6 +151,159 @@ This is obviously true. There is no circumstance where we should claim we know _
 
 ## Building a model
 
+He characterizes the model building process into three steps, which supports our previous profundity about Bayesian thinking: switching from thinking about the _data_ to the _model_, and only use data as a fleeting piece of information to fine tune that model. The three steps are:
+
+* Data story: Thinking about the _data-generating process_ (no data included)
+* Update: Use your data to now revise, or as he says, "educate" your model based on evidence
+* Evaluate: That is your model as of _now_, but up to this point in time, we may need to change it
+
+> "But all data stories are complete, in the sense that they are sufficient for specifying an algorithm for simulating new data." (28)
+
+This is profound. Because once we specify the data-generating process, we _think_ we now know (to the best of our knowledge), how an subsequent data would be generated. Thus, we don't actually need real data to begin evaluating the truth to our model. We can start simulating it and see how it plays out. If stuff starts to look how it does it real life, we may be on the right track, and then could move forward with getting real data to inform our estimates.
+
+> "When you are forced to consider sampling and measurement and make a precise statement of how temperature predicts ran, many stories and resulting models will be consistent with the same vague hypothesis. Resolving that ambiguity often leads to important realizations and model revisions, before any model is fit to data." (29)
+
+This is exactly my point I made in @sec-flaws-in-falsifiability. There are infinite ways to procedurally carry out a study answering the same question (i.e., how you define things, how data is collected (exactly), every detailed assumption made along the way, etc.). All of these nuances can have drastic effects on the ultimate conclusions made.
+
+### Updating priors
+
+He goes through the concept of what Bayesian updating is to get a feel for it. We can recreate Figure 2.5 (page 30) to better intuit what is happening behind the scenes.
+
+```{r, message=FALSE}
+library(tidyverse)
+
+# The observed sample sequence
+observed_sample <- c(1, 0, 1, 1, 1, 0, 1, 0, 1) # 1 = water; 0 = land
+N <- length(observed_sample)
+
+# Approximate the set of inifinite p-values by a large set of discrete ones
+p_continuous <- seq(0, 1, .01)
+
+# Set the prior probability (uniform over the possibly choices)
+prior <- rep(1 / length(p_continuous), length(p_continuous))
+
+# Set the current posterior as the prior (before any data collected)
+last_posterior <- prior
+
+# Make result set
+results <- tibble()
+
+# For each value in the observed sample 
+for(i in 1:N) {
+  
+  # 1. Get the sub-sample
+  sub_sample <- observed_sample[1:i]
+  
+  # 2. Compute metrics (the number of water samples, and the total number of spins)
+  W_temp <- sum(sub_sample)
+  N_temp <- length(sub_sample)
+  
+  # 3. Compute the likelihood for each p
+  temp_likelihood <- p_continuous^W_temp * (1 - p_continuous)^(N_temp - W_temp)
+  
+  # 4. Posterior
+  temp_posterior <- temp_likelihood / sum(temp_likelihood)
+  
+  # 5. Add to results
+  results <-
+    results |>
+    bind_rows(
+      tibble(
+        sample = i,
+        sequence = paste(sub_sample, collapse = ","),
+        p_continuous,
+        likelihood = temp_likelihood,
+        current = temp_posterior,
+        last = last_posterior
+      )
+    )
+  
+  # Set the new last posterior
+  last_posterior <- temp_posterior
+  
+}
+
+results |>
+  
+  # Send down the rows
+  pivot_longer(
+    cols = c(last, current)
+  ) %>%
+  
+  # Make a plot
+  ggplot() +
+  geom_area(
+    aes(
+      x = p_continuous,
+      y = value,
+      fill = name
+    ),
+    color = "black",
+    alpha = .65,
+    position = "identity"
+  ) +
+  facet_wrap(
+    ~paste0("Spin: ", factor(sample), " \nSample: ", sequence)
+  ) +
+  theme(
+    legend.position = "top",
+    panel.background = element_blank(),
+    panel.grid.major.y = element_line(colour = "gray"),
+    axis.ticks.y = element_blank(),
+    axis.text.y = element_blank()
+  ) +
+  xlab("p") +
+  ylab("Posterior Probability") +
+  labs(
+    fill = "Posterior"
+  ) +
+  scale_fill_manual(
+    values = c("blue", "darkgray")
+  ) 
+```
+
+_Note that this is actually just a discrete approximation of the true continuous, analytical solution, but it covers the idea of what is going on. I previously went in depth on this specific problem from the book [here](https://www.zajichekstats.com/post/statistical-rethinking-2023-class-notes/#lecture2) which provides much more detail and code._
+
+> "Notice that every updated set of plausibilities becomes the initial plausibilities for the next observation. Every conclusion is the starting point for future inference." (31)
+
+This supports the idea that our _model_ is the living, breathing thing, and that we should use everything we know up to _now_ to inform it. Then use new information to subsequently update it as time goes on. *Our model is never complete*.
+
+Another crucial point about considering sequential updates versus using your entire data set in a single updating step:
+
+> "So the data could be presented to your model in any order, or all at once even. In most cases, you will present the data all at once, for the sake of convenience. But it's important to realize that this merely represents abbreviation of an iterated learning process." (31)
+
+There is a catch though, as reflected later:
+
+> "That is only true, however, because the model assumes that order is irrelevant to inference. When something is irrelevant to the machine, it won't affect the inference directly. But it may affect it indirectly, because the data will depend upon order." (31)
+
+Hence the importance of _understanding_ the data-generating process.
+
+### Bayesian models need no data
+
+In the _Rethinking_ box on page 31, he discusses a crucial point related to what we've talked about: that there is no sample size requirement for Bayesian inference. This again is a _key_ reason why this paradigm is superior. We aren't stuck in asymptotics and arbitrary sample size cutoffs (e.g., N=30). We can specify our model, with prior information, using the best available knowledge we have up to this point in time, and actually get reliable estimates. Then as we collect a single observation, our new (posterior) estimates will nicely update to reflect the (likely little) amount of information contained in it, instead of needing to gather a bunch of data in order to get even get something interpretable. I previously discussed this in depth with an example here:
+
+{{< video https://www.youtube.com/embed/bUerkVsCwtA >}}
+
+### Tie inferences back to what matters
+
+It's not enough to just provide an estimate and say "it matters" or not, like we arbitrarily do with frequentist p-values and 5% thresholds. These are empty statements. And again, for a result to be meaningful, we need to _feel it in our bones_. If all results were presented with such relevance, there wouldn't be so much controversy about the value of "science". This problem in large part in our society is due to the lacksidasical approach to assigning meaning to estimates, declaring scientific certainty, and not actually doing to the due diligence of acknowledging nuances to why some things matter to some people and some don't. 
+
+This point is hit on in the _Evaluate_ section (2.2.3) of the book:
+
+> "Instead, the objective is to check the model's adequacy for some purpose. This usually means asking and answering additional questions, beyond those that originally constructed the model. Both the questions and answers will depend upon the scientific context." (32)
+
+When we just blindly run statistical tests, get a p-value less than 5%, and then declare that "science shows this thing, and anyone who disregards it is anti-science", we've entered into something that is more religious, not scientific. Because we haven't actually convinced the person that these results matter. It is our job to frame scientific questions, their scope, and the subsequent results/interpretation closer something tangible that makes people _feel_ the results.
+
+As the great book [The Cult of Statistical Significance: How the Standard Error Costs Us Jobs, Justice, and Lives](https://press.umich.edu/Books/T/The-Cult-of-Statistical-Significance2) says:
+
+> "Real science changes one’s mind. That’s one way to see that the proliferation of unpersuasive significance tests is not real science." (page 112)
+
+and 
+
+> "She can test her belief in the price effect by looking at the magnitudes, using, for example, the highly advanced technique common in data-heavy articles in physics journals: ‘interocular trauma’. That is, she can look and see if the result hits her between the eyes." (page 72)
+
+See a much more extensive discussion of this book, and a large list of quotes from that book that I love, [here](https://www.zajichekstats.com/post/statistical-significance-is-insignificant/).
+
 <br>
 
 _Video Lecture From the Author_

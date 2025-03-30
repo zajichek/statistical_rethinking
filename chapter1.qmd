@@ -30,7 +30,7 @@ He sets the stage for the book's thesis quite clearly:
 
 It's about statistical practice, of course, but also how we can _teach_ statistics, even at an introductory level, differently so it's not just based on objective, pre-made tools. This would be glorious. Instead of teaching students to systematically look up z-scores in the back of the text book and write out "significance" statements, teach them to solve problems with their brain. I've thought one simple way to start would just be to use varying (or random) confidence/significance levels on different problems, which at the very least would elicit some questioning and skepticism about what those numbers mean.
 
-### Flaws in falsifiability
+### Flaws in falsifiability {#sec-flaws-in-falsifiability}
 
 He discusses Karl Popper and the perceived objective of science being to falsify hypotheses. I agree that in principle, this makes sense: there's never really a right answer, but we can move closer and closer to the truth by finding evidence of what it's not. But I think one thing that's overlooked is how this plays out in the real-world (and what I deduce as an undertone from McElreath): null hypotheses that we test against are arbitrary and blindly applied. We test default hypotheses that we don't even think ourselves to be true (i.e., null effects). It's just part of the statistical procedure (on page 5 in the purple side box he actually goes into this explicitly). So I think this is a component of it, but he then goes more into other reasons why this is flawed.
 
